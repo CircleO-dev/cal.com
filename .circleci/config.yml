@@ -17,12 +17,22 @@ jobs:
       - run:
           name: build proj
           command: yarn build
-      - run:
-          name: start
-          command: yarn start
-      - run:
-          name: Prepare shell commands
-          command: chmod +x ./deploy/deploy.sh
-      - run:
-          name: Run deploy scripts
-          command: ./deploy/deploy.sh
+workflows:
+  build_and_deploy:
+    jobs:
+      - nx-build:
+          deploy-stage: test
+          filters:
+            branches:
+              only:
+                - circleci-project-setup
+                - main
+      # - run:
+      #     name: start
+      #     command: yarn start
+      # - run:
+      #     name: Prepare shell commands
+      #     command: chmod +x ./deploy/deploy.sh
+      # - run:
+      #     name: Run deploy scripts
+      #     command: ./deploy/deploy.sh
