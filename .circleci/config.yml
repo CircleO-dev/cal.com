@@ -11,9 +11,9 @@ jobs:
     resource_class: medium
     steps:
       - checkout
-      # - run: |
-      #     npm install -g turbo
-      #     turbo prune --scope=@circleo/web --docker
+      - run: |
+          npm install -g turbo
+      # turbo prune --scope=@circleo/web --docker
       - run:
           name: build proj
           command: yarn build
