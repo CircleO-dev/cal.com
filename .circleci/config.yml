@@ -21,7 +21,7 @@ workflows:
   build_and_deploy:
     jobs:
       - nx-build:
-          deploy-stage: test
+          # deploy-stage: test
           filters:
             branches:
               only:
