@@ -33,7 +33,7 @@ jobs:
           region: AWS_REGION
           repo: <<parameters.repo>>
           tag: "<<parameters.docker-tag>>${CIRCLE_SHA1}"
-          extra-build-args: '--DATABASE_URL=${DATABASE_URL}'
+          extra-build-args: '--build-arg DATABASE_URL=${DATABASE_URL}'
   deploy:
     machine:
        image: ubuntu-2004:202111-02
