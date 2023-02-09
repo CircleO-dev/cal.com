@@ -33,6 +33,7 @@ jobs:
           region: AWS_REGION
           repo: <<parameters.repo>>
           tag: "<<parameters.docker-tag>>${CIRCLE_SHA1}"
+          extra-build-args: '--DATABASE_URL=${DATABASE_URL}'
   deploy:
     machine:
        image: ubuntu-2004:202111-02
@@ -65,7 +66,6 @@ workflows:
           dockerfile: Dockerfile
           repo: cal-com
           docker-tag: ""
-          extra-build-args: '--DATABASE_URL=${DATABASE_URL}'
           filters:
             branches:
               only: 
