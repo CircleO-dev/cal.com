@@ -65,6 +65,7 @@ workflows:
           dockerfile: Dockerfile
           repo: cal-com
           docker-tag: ""
+          extra-build-args: '--DATABASE_URL=${DATABASE_URL}'
           filters:
             branches:
               only: 
