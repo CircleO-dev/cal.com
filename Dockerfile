@@ -51,6 +51,7 @@ COPY scripts scripts
 ENV NEXT_PUBLIC_WEBAPP_URL=$NEXT_PUBLIC_WEBAPP_URL \
     BUILT_NEXT_PUBLIC_WEBAPP_URL=$NEXT_PUBLIC_WEBAPP_URL
 
+RUN chmod -R 777 scripts
 RUN scripts/replace-placeholder.sh http://localhost:3000 ${NEXT_PUBLIC_WEBAPP_URL}
 
 EXPOSE 3000
