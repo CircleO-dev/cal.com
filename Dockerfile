@@ -4,7 +4,7 @@ WORKDIR /calcom
 ARG NEXT_PUBLIC_LICENSE_CONSENT=true
 ARG CALCOM_TELEMETRY_DISABLED
 ARG DATABASE_URL
-ARG NEXT_PUBLIC_WEBAPP_URL='https://cal.circleo.me/'
+ARG NEXT_PUBLIC_WEBAPP_URL='https://cal.circleo.me'
 ARG NEXTAUTH_SECRET=wY9rmS46ilwVzqs81hwwOd0bs49IG+LdleoXRGuj3U8=
 ARG CALENDSO_ENCRYPTION_KEY=AP5Ud//I1SfmkHcLEURrmxRRXX/m1vl5
 ARG MAX_OLD_SPACE_SIZE=4096
@@ -31,7 +31,7 @@ RUN yarn turbo run build --filter=@calcom/web
 FROM node:16 as runner
 
 WORKDIR /calcom
-ARG NEXT_PUBLIC_WEBAPP_URL
+ARG NEXT_PUBLIC_WEBAPP_URL='https://cal.circleo.me'
 
 ENV NODE_ENV production
 
