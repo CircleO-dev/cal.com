@@ -67,31 +67,31 @@ export default function Setup(props: inferSSRProps<typeof getServerSideProps>) {
     },
   ];
 
-  if (!isFreeLicense) {
-    steps.push({
-      title: t("step_enterprise_license"),
-      description: t("step_enterprise_license_description"),
-      content: (setIsLoading) => {
-        const currentStep = 3;
-        return (
-          <EnterpriseLicense
-            id={`wizard-step-${currentStep}`}
-            name={`wizard-step-${currentStep}`}
-            onSubmit={() => {
-              setIsLoading(true);
-            }}
-            onSuccess={() => {
-              setStep(currentStep + 1);
-            }}
-            onSuccessValidate={() => {
-              setIsEnabledEE(true);
-            }}
-          />
-        );
-      },
-      isEnabled: isEnabledEE,
-    });
-  }
+  // if (!isFreeLicense) {
+  //   steps.push({
+  //     title: t("step_enterprise_license"),
+  //     description: t("step_enterprise_license_description"),
+  //     content: (setIsLoading) => {
+  //       const currentStep = 3;
+  //       return (
+  //         <EnterpriseLicense
+  //           id={`wizard-step-${currentStep}`}
+  //           name={`wizard-step-${currentStep}`}
+  //           onSubmit={() => {
+  //             setIsLoading(true);
+  //           }}
+  //           onSuccess={() => {
+  //             setStep(currentStep + 1);
+  //           }}
+  //           onSuccessValidate={() => {
+  //             setIsEnabledEE(true);
+  //           }}
+  //         />
+  //       );
+  //     },
+  //     isEnabled: isEnabledEE,
+  //   });
+  // }
 
   steps.push({
     title: t("enable_apps"),
