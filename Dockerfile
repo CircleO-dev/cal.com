@@ -1,11 +1,11 @@
 FROM node:16 as builder
 
 WORKDIR /calcom
-ARG NEXT_PUBLIC_LICENSE_CONSENT
+ARG NEXT_PUBLIC_LICENSE_CONSENT=true
 ARG CALCOM_TELEMETRY_DISABLED
 ARG DATABASE_URL
-ARG NEXTAUTH_SECRET=secret
-ARG CALENDSO_ENCRYPTION_KEY=secret
+ARG NEXTAUTH_SECRET=wY9rmS46ilwVzqs81hwwOd0bs49IG+LdleoXRGuj3U8=
+ARG CALENDSO_ENCRYPTION_KEY=AP5Ud//I1SfmkHcLEURrmxRRXX/m1vl5
 ARG MAX_OLD_SPACE_SIZE=4096
 
 ENV NEXT_PUBLIC_WEBAPP_URL=http://NEXT_PUBLIC_WEBAPP_URL_PLACEHOLDER \
@@ -21,7 +21,7 @@ COPY apps/web ./apps/web
 COPY packages ./packages
 
 RUN yarn global add turbo && \
-    yarn config set network-timeout 1000000000 -g && \ 
+    yarn config set network-timeout 1000000000 -g && \
     turbo prune --scope=@calcom/web --docker && \
     yarn install
 
@@ -51,8 +51,7 @@ COPY scripts scripts
 ENV NEXT_PUBLIC_WEBAPP_URL=$NEXT_PUBLIC_WEBAPP_URL \
     BUILT_NEXT_PUBLIC_WEBAPP_URL=$NEXT_PUBLIC_WEBAPP_URL
 
-RUN chmod -R 777 scripts
-RUN scripts/replace-placeholder.sh http://NEXT_PUBLIC_WEBAPP_URL_PLACEHOLDER ${NEXT_PUBLIC_WEBAPP_URL}
+RUN scripts/replace-placeholder.sh http://localhost:3000 ${NEXT_PUBLIC_WEBAPP_URL}
 
 EXPOSE 3000
 CMD ["/calcom/scripts/start.sh"]
