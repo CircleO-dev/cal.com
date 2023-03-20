@@ -11,5 +11,9 @@ module.exports = defineConfig({
       name: "snippet",
       fileName: (format) => `snippet.${format}.js`,
     },
+    minify: "terser",
+    terserOptions: {
+      compress: true,
+    },
   },
 });

@@ -147,10 +147,7 @@ export function Card({
               onClick={actionButton?.onClick}
               target="_blank"
               rel="noreferrer"
-              className="text-xs font-medium"
-              // NextJS thinks this is an internal link and tries to prefetch it (also on hover), which fails
-              // TODO: Extract this into a constant to handle /docs & /developer as well
-              prefetch={!learnMore.href.startsWith("https://cal.com/blog")}>
+              className="text-xs font-medium">
               {learnMore.text}
             </Link>
           )}

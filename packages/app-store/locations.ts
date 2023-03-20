@@ -12,7 +12,7 @@ export type DefaultEventLocationType = {
   type: DefaultEventLocationTypeEnum;
   label: string;
   messageForOrganizer: string;
-  category: "in person" | "other" | "phone";
+  category: string;
 
   iconUrl: string;
   urlRegExp?: string;
@@ -66,7 +66,7 @@ export const defaultLocations: DefaultEventLocationType[] = [
   {
     default: true,
     type: DefaultEventLocationTypeEnum.AttendeeInPerson,
-    label: "attendee_in_person",
+    label: "attendeeInPerson",
     variable: "address",
     organizerInputType: null,
     messageForOrganizer: "Cal will ask your invitee to enter an address before scheduling.",
@@ -79,7 +79,7 @@ export const defaultLocations: DefaultEventLocationType[] = [
   {
     default: true,
     type: DefaultEventLocationTypeEnum.InPerson,
-    label: "in_person",
+    label: "inPerson",
     organizerInputType: "text",
     messageForOrganizer: "Provide an Address or Place",
     // HACK:
@@ -91,7 +91,7 @@ export const defaultLocations: DefaultEventLocationType[] = [
   {
     default: true,
     type: DefaultEventLocationTypeEnum.Link,
-    label: "link_meeting",
+    label: "Link",
     organizerInputType: "text",
     variable: "locationLink",
     messageForOrganizer: "Provide a Meeting Link",
@@ -102,7 +102,7 @@ export const defaultLocations: DefaultEventLocationType[] = [
   {
     default: true,
     type: DefaultEventLocationTypeEnum.Phone,
-    label: "attendee_phone_number",
+    label: "Attendee Phone Number",
     variable: "phone",
     organizerInputType: null,
     attendeeInputType: "phone",
@@ -117,7 +117,7 @@ export const defaultLocations: DefaultEventLocationType[] = [
   {
     default: true,
     type: DefaultEventLocationTypeEnum.UserPhone,
-    label: "organizer_phone_number",
+    label: "Organizer Phone Number",
     messageForOrganizer: "Provide your phone number",
     organizerInputType: "phone",
     variable: "locationPhoneNumber",

@@ -197,7 +197,7 @@ function EventTypeSingleLayout({
       heading={eventType.title}
       CTA={
         <div className="flex items-center justify-end">
-          <div className="hidden items-center rounded-md px-2 sm:hover:bg-gray-100 lg:flex">
+          <div className="hidden items-center rounded-md px-2 sm:flex sm:hover:bg-gray-100">
             <Skeleton
               as={Label}
               htmlFor="hiddenSwitch"
@@ -206,7 +206,7 @@ function EventTypeSingleLayout({
             </Skeleton>
             <Switch
               id="hiddenSwitch"
-              checked={formMethods.watch("hidden")}
+              defaultChecked={formMethods.getValues("hidden")}
               onCheckedChange={(e) => {
                 formMethods.setValue("hidden", e);
               }}
@@ -220,7 +220,6 @@ function EventTypeSingleLayout({
             <Tooltip content={t("preview")}>
               <Button
                 color="secondary"
-                data-testid="preview-button"
                 target="_blank"
                 variant="icon"
                 href={permalink}
@@ -262,7 +261,7 @@ function EventTypeSingleLayout({
             <DropdownMenuTrigger asChild>
               <Button className="lg:hidden" StartIcon={FiMoreHorizontal} variant="icon" color="secondary" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent style={{ minWidth: "200px" }}>
+            <DropdownMenuContent>
               <DropdownMenuItem className="focus:ring-gray-100">
                 <DropdownItem
                   target="_blank"
@@ -294,17 +293,17 @@ function EventTypeSingleLayout({
                   {t("delete")}
                 </DropdownItem>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <div className="flex h-9 flex-row items-center justify-between py-2 px-4 sm:hover:bg-gray-100">
+              <DropdownMenuSeparator className="block sm:hidden" />
+              <div className="flex items-center rounded-md py-1.5 px-4 sm:hidden sm:hover:bg-gray-100">
                 <Skeleton
                   as={Label}
                   htmlFor="hiddenSwitch"
-                  className="mt-2 inline cursor-pointer self-center pr-2 ">
+                  className="mt-2 inline cursor-pointer self-center pr-2 sm:hidden">
                   {t("hide_from_profile")}
                 </Skeleton>
                 <Switch
                   id="hiddenSwitch"
-                  checked={formMethods.watch("hidden")}
+                  defaultChecked={formMethods.getValues("hidden")}
                   onCheckedChange={(e) => {
                     formMethods.setValue("hidden", e);
                   }}

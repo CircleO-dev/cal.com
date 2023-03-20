@@ -13,7 +13,7 @@ import { FiExternalLink, FiZap } from "@calcom/ui/components/icon";
 import LicenseRequired from "../../common/components/v2/LicenseRequired";
 import { getActionIcon } from "../lib/getActionIcon";
 import SkeletonLoader from "./SkeletonLoaderEventWorkflowsTab";
-import type { WorkflowType } from "./WorkflowListPage";
+import { WorkflowType } from "./WorkflowListPage";
 
 type ItemProps = {
   workflow: WorkflowType;
@@ -36,7 +36,6 @@ const WorkflowListItem = (props: ItemProps) => {
   );
 
   const isActive = activeEventTypeIds.includes(eventType.id);
-  const utils = trpc.useContext();
 
   const activateEventTypeMutation = trpc.viewer.workflows.activateEventType.useMutation({
     onSuccess: async () => {
@@ -53,7 +52,6 @@ const WorkflowListItem = (props: ItemProps) => {
         setActiveEventTypeIds(newActiveEventTypeIds);
         offOn = "on";
       }
-      await utils.viewer.eventTypes.get.invalidate({ id: eventType.id });
       showToast(
         t("workflow_turned_on_successfully", {
           workflowName: workflow.name,
@@ -65,11 +63,6 @@ const WorkflowListItem = (props: ItemProps) => {
     onError: (err) => {
       if (err instanceof HttpError) {
         const message = `${err.statusCode}: ${err.message}`;
-        showToast(message, "error");
-      }
-      if (err.data?.code === "UNAUTHORIZED") {
-        // TODO: Add missing translation
-        const message = `${err.data.code}: You are not authorized to enable or disable this workflow`;
         showToast(message, "error");
       }
     },
@@ -155,21 +148,14 @@ type Props = {
   eventType: {
     id: number;
     title: string;
-    userId: number | null;
-    team: {
-      id?: number;
-    } | null;
   };
   workflows: WorkflowType[];
 };
 
 function EventWorkflowsTab(props: Props) {
-  const { workflows, eventType } = props;
+  const { workflows } = props;
   const { t } = useLocale();
-  const { data, isLoading } = trpc.viewer.workflows.list.useQuery({
-    teamId: eventType.team?.id,
-    userId: eventType.userId || undefined,
-  });
+  const { data, isLoading } = trpc.viewer.workflows.list.useQuery();
   const router = useRouter();
   const [sortedWorkflows, setSortedWorkflows] = useState<Array<WorkflowType>>([]);
 
@@ -190,7 +176,7 @@ function EventWorkflowsTab(props: Props) {
     }
   }, [isLoading]);
 
-  const createMutation = trpc.viewer.workflows.create.useMutation({
+  const createMutation = trpc.viewer.workflows.createV2.useMutation({
     onSuccess: async ({ workflow }) => {
       await router.replace("/workflows/" + workflow.id);
     },
@@ -226,7 +212,7 @@ function EventWorkflowsTab(props: Props) {
                 <Button
                   target="_blank"
                   color="secondary"
-                  onClick={() => createMutation.mutate({ teamId: eventType.team?.id })}
+                  onClick={() => createMutation.mutate()}
                   loading={createMutation.isLoading}>
                   {t("create_workflow")}
                 </Button>

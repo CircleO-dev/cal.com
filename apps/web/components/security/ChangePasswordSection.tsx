@@ -1,7 +1,7 @@
 import type { SyntheticEvent } from "react";
 import { useState } from "react";
 
-import { ErrorCode } from "@calcom/features/auth/lib/ErrorCode";
+import { ErrorCode } from "@calcom/lib/auth";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { Button, showToast } from "@calcom/ui";
 

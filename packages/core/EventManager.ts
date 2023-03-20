@@ -1,18 +1,22 @@
-import type { DestinationCalendar, Booking } from "@prisma/client";
-import { cloneDeep } from "lodash";
+import { DestinationCalendar } from "@prisma/client";
 import merge from "lodash/merge";
 import { v5 as uuidv5 } from "uuid";
-import type { z } from "zod";
+import { z } from "zod";
 
-import { getCalendar } from "@calcom/app-store/_utils/getCalendar";
 import { FAKE_DAILY_CREDENTIAL } from "@calcom/app-store/dailyvideo/lib/VideoApiAdapter";
 import { getEventLocationTypeFromApp } from "@calcom/app-store/locations";
 import { MeetLocationType } from "@calcom/app-store/locations";
 import getApps from "@calcom/app-store/utils";
 import prisma from "@calcom/prisma";
+import { Attendee } from "@calcom/prisma/client";
 import { createdEventSchema } from "@calcom/prisma/zod-utils";
-import type { AdditionalInformation, CalendarEvent, NewCalendarEventType } from "@calcom/types/Calendar";
-import type { CredentialPayload, CredentialWithAppName } from "@calcom/types/Credential";
+import type {
+  AdditionalInformation,
+  CalendarEvent,
+  NewCalendarEventType,
+  Person,
+} from "@calcom/types/Calendar";
+import { CredentialPayload, CredentialWithAppName } from "@calcom/types/Credential";
 import type { Event } from "@calcom/types/Event";
 import type {
   CreateUpdateResult,
@@ -61,7 +65,7 @@ export const processLocation = (event: CalendarEvent): CalendarEvent => {
   return event;
 };
 
-export type EventManagerUser = {
+type EventManagerUser = {
   credentials: CredentialPayload[];
   destinationCalendar: DestinationCalendar | null;
 };
@@ -121,10 +125,8 @@ export default class EventManager {
       results.push(result);
     }
 
-    // Some calendar libraries may edit the original event so let's clone it
-    const clonedCalEvent = cloneDeep(event);
     // Create the calendar event with the proper video call data
-    results.push(...(await this.createAllCalendarEvents(clonedCalEvent)));
+    results.push(...(await this.createAllCalendarEvents(evt)));
 
     const referencesToCreate = results.map((result) => {
       let createdEventObj: createdEventSchema | null = null;
@@ -197,10 +199,11 @@ export default class EventManager {
   public async reschedule(
     event: CalendarEvent,
     rescheduleUid: string,
-    newBookingId?: number
+    newBookingId?: number,
+    rescheduleReason?: string
   ): Promise<CreateUpdateResult> {
-    const originalEvt = processLocation(event);
-    const evt = cloneDeep(originalEvt);
+    const evt = processLocation(event);
+
     if (!rescheduleUid) {
       throw new Error("You called eventManager.update without an `rescheduleUid`. This should never happen.");
     }
@@ -213,7 +216,6 @@ export default class EventManager {
       select: {
         id: true,
         userId: true,
-        attendees: true,
         references: {
           // NOTE: id field removed from select as we don't require for deletingMany
           // but was giving error on recreate for reschedule, probably because promise.all() didn't finished
@@ -229,12 +231,6 @@ export default class EventManager {
         },
         destinationCalendar: true,
         payment: true,
-        eventType: {
-          select: {
-            seatsPerTimeSlot: true,
-            seatsShowAttendees: true,
-          },
-        },
       },
     });
 
@@ -242,13 +238,22 @@ export default class EventManager {
       throw new Error("booking not found");
     }
 
+    // Add reschedule reason to new booking
+    await prisma.booking.update({
+      where: {
+        id: newBookingId,
+      },
+      data: {
+        cancellationReason: rescheduleReason,
+      },
+    });
+
     const isDedicated = evt.location ? isDedicatedIntegration(evt.location) : null;
     const results: Array<EventResult<Event>> = [];
     // If and only if event type is a dedicated meeting, update the dedicated video meeting.
     if (isDedicated) {
       const result = await this.updateVideoEvent(evt, booking);
       const [updatedEvent] = Array.isArray(result.updatedEvent) ? result.updatedEvent : [result.updatedEvent];
-
       if (updatedEvent) {
         evt.videoCallData = updatedEvent;
         evt.location = updatedEvent.url;
@@ -256,11 +261,8 @@ export default class EventManager {
       results.push(result);
     }
 
-    // There was a case that booking didn't had any reference and we don't want to throw error on function
-    if (booking.references.find((reference) => reference.type.includes("_calendar"))) {
-      // Update all calendar events.
-      results.push(...(await this.updateAllCalendarEvents(evt, booking, newBookingId)));
-    }
+    // Update all calendar events.
+    results.push(...(await this.updateAllCalendarEvents(evt, booking)));
 
     const bookingPayment = booking?.payment;
 
@@ -279,6 +281,27 @@ export default class EventManager {
       });
     }
 
+    // Now we can delete the old booking and its references.
+    const bookingReferenceDeletes = prisma.bookingReference.deleteMany({
+      where: {
+        bookingId: booking.id,
+      },
+    });
+    const attendeeDeletes = prisma.attendee.deleteMany({
+      where: {
+        bookingId: booking.id,
+      },
+    });
+
+    const bookingDeletes = prisma.booking.delete({
+      where: {
+        id: booking.id,
+      },
+    });
+
+    // Wait for all deletions to be applied.
+    await Promise.all([bookingReferenceDeletes, attendeeDeletes, bookingDeletes]);
+
     return {
       results,
       referencesToCreate: [...booking.references],
@@ -286,10 +309,7 @@ export default class EventManager {
   }
 
   public async updateCalendarAttendees(event: CalendarEvent, booking: PartialBooking) {
-    if (booking.references.length === 0) {
-      console.error("Tried to update references but there wasn't any.");
-      return;
-    }
+    // @NOTE: This function is only used for updating attendees on a calendar event. Can we remove this?
     await this.updateAllCalendarEvents(event, booking);
   }
 
@@ -373,7 +393,7 @@ export default class EventManager {
 
     let videoCredential = this.videoCredentials
       // Whenever a new video connection is added, latest credentials are added with the highest ID.
-      // Because you can't rely on having them in the highest first order here, ensure this by sorting in DESC order
+      // Because you can't rely on having them in the higgest first order here, ensure this by sorting in DESC order
       .sort((a, b) => {
         return b.id - a.id;
       })
@@ -420,34 +440,15 @@ export default class EventManager {
    */
   private async updateAllCalendarEvents(
     event: CalendarEvent,
-    booking: PartialBooking,
-    newBookingId?: number
+    booking: PartialBooking
   ): Promise<Array<EventResult<NewCalendarEventType>>> {
     let calendarReference: PartialReference | undefined = undefined,
       credential;
     try {
-      // If a newBookingId is given, update that calendar event
-      let newBooking;
-      if (newBookingId) {
-        newBooking = await prisma.booking.findUnique({
-          where: {
-            id: newBookingId,
-          },
-          select: {
-            references: true,
-          },
-        });
-      }
-
-      if (newBooking) {
-        calendarReference = newBooking.references.find((reference) => reference.type.includes("_calendar"));
-      } else {
-        // Bookings should only have one calendar reference
-        calendarReference = booking.references.find((reference) => reference.type.includes("_calendar"));
-      }
-
+      // Bookings should only have one calendar reference
+      calendarReference = booking.references.filter((reference) => reference.type.includes("_calendar"))[0];
       if (!calendarReference) {
-        return [];
+        throw new Error("bookingRef");
       }
       const { uid: bookingRefUid, externalCalendarId: bookingExternalCalendarId } = calendarReference;
 
@@ -467,22 +468,6 @@ export default class EventManager {
         );
         for (const credential of credentials) {
           result.push(updateEvent(credential, event, bookingRefUid, bookingExternalCalendarId));
-        }
-      }
-
-      // If we are merging two calendar events we should delete the old calendar event
-      if (newBookingId) {
-        const oldCalendarEvent = booking.references.find((reference) => reference.type.includes("_calendar"));
-
-        if (oldCalendarEvent?.credentialId) {
-          const calendarCredential = await prisma.credential.findUnique({
-            where: {
-              id: oldCalendarEvent.credentialId,
-            },
-          });
-          const calendar = getCalendar(calendarCredential);
-
-          await calendar?.deleteEvent(oldCalendarEvent.uid, event, oldCalendarEvent.externalCalendarId);
         }
       }
 
@@ -557,15 +542,5 @@ export default class EventManager {
    */
   public async updateAndSetCancelledPlaceholder(event: CalendarEvent, booking: PartialBooking) {
     await this.updateAllCalendarEvents(event, booking);
-  }
-
-  public async rescheduleBookingWithSeats(
-    originalBooking: Booking,
-    newTimeSlotBooking?: Booking,
-    owner?: boolean
-  ) {
-    // Get originalBooking
-    // If originalBooking has only one attendee we should do normal reschedule
-    // Change current event attendees in everyone calendar
   }
 }

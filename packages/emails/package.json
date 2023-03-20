@@ -3,6 +3,7 @@
   "sideEffects": false,
   "version": "0.0.0",
   "private": true,
+  "scripts": {},
   "dependencies": {
     "@calcom/dayjs": "*",
     "@calcom/lib": "*",

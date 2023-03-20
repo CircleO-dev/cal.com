@@ -1,5 +1,6 @@
 import superjson from "superjson";
 
+import { httpBatchLink } from "../client/links/httpBatchLink";
 import { httpLink } from "../client/links/httpLink";
 import { loggerLink } from "../client/links/loggerLink";
 import { splitLink } from "../client/links/splitLink";
@@ -7,7 +8,6 @@ import { createTRPCNext } from "../next";
 // ℹ️ Type-only import:
 // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export
 import type { TRPCClientErrorLike } from "../react";
-import { httpBatchLink } from "../react";
 import type { inferRouterInputs, inferRouterOutputs, Maybe } from "../server";
 import type { AppRouter } from "../server/routers/_app";
 

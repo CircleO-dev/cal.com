@@ -20,7 +20,7 @@ export const tips = [
     mediaLink: "https://go.cal.com/teams-video",
     title: "How to set up Teams",
     description: "Learn how to use round-robin and collective events.",
-    href: "https://cal.com/docs/enterprise-features/teams",
+    href: "https://docs.cal.com/deep-dives/event-types",
   },
   {
     id: 3,
@@ -36,7 +36,7 @@ export const tips = [
     mediaLink: "https://go.cal.com/confirmation-video",
     title: "Requires Confirmation",
     description: "Learn how to be in charge of your bookings",
-    href: "https://cal.com/resources/feature/opt-in",
+    href: "https://docs.cal.com/deep-dives/event-types#opt-in-booking",
   },
   {
     id: 5,
@@ -77,14 +77,6 @@ export const tips = [
     title: "Round-Robin",
     description: "Create advanced group meetings with round-robin",
     href: "https://go.cal.com/round-robin",
-  },
-  {
-    id: 10,
-    thumbnailUrl: "https://img.youtube.com/vi/jvaBafzVUQc/0.jpg",
-    mediaLink: "https://go.cal.com/video",
-    title: "Cal Video",
-    description: "Free video conferencing with recording",
-    href: "https://go.cal.com/video",
   },
 ];
 

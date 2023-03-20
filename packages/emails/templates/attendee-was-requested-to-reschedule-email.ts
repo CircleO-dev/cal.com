@@ -1,5 +1,4 @@
-import type { DateArray, Person } from "ics";
-import { createEvent } from "ics";
+import { createEvent, DateArray, Person } from "ics";
 
 import dayjs from "@calcom/dayjs";
 import { getManageLink } from "@calcom/lib/CalEventParser";
@@ -12,7 +11,7 @@ import OrganizerScheduledEmail from "./organizer-scheduled-email";
 export default class AttendeeWasRequestedToRescheduleEmail extends OrganizerScheduledEmail {
   private metadata: { rescheduleLink: string };
   constructor(calEvent: CalendarEvent, metadata: { rescheduleLink: string }) {
-    super({ calEvent });
+    super(calEvent);
     this.metadata = metadata;
   }
   protected getNodeMailerPayload(): Record<string, unknown> {

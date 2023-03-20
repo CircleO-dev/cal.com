@@ -35,7 +35,6 @@ export const bookEventTypeSelect = Prisma.validator<Prisma.EventTypeSelect>()({
   disableGuests: true,
   userId: true,
   seatsPerTimeSlot: true,
-  bookingFields: true,
   workflows: {
     include: {
       workflow: {

@@ -15,7 +15,6 @@ import { isENVDev } from "@calcom/lib/env";
  */
 
 const NEXTAUTH_COOKIE_DOMAIN = process.env.NEXTAUTH_COOKIE_DOMAIN || "";
-
 export function defaultCookies(useSecureCookies: boolean): CookiesOptions {
   const cookiePrefix = useSecureCookies ? "__Secure-" : "";
 

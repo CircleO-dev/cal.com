@@ -2,8 +2,6 @@ import { expect } from "@playwright/test";
 
 import { test } from "../lib/fixtures";
 
-test.afterEach(({ users }) => users.deleteAll());
-
 test("Can delete user account", async ({ page, users }) => {
   const user = await users.create({
     username: "delete-me",
@@ -12,7 +10,7 @@ test("Can delete user account", async ({ page, users }) => {
 
   await page.waitForSelector("[data-testid=dashboard-shell]");
 
-  await page.goto(`/settings/my-account/profile`);
+  await page.goto(`/settings/profile`);
   await page.click("[data-testid=delete-account]");
   if (!user.username) throw Error(`Test user doesn't have a username`);
 

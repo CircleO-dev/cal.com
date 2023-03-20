@@ -1,4 +1,5 @@
 import type { TFunction } from "next-i18next";
+import { ReactNode } from "react";
 
 import { APP_NAME, WEBAPP_URL, IS_PRODUCTION } from "@calcom/lib/constants";
 
@@ -55,7 +56,6 @@ export const TeamInviteEmail = (
         <CallToAction
           label={props.language(props.isCalcomMember ? "email_user_cta" : "email_no_user_cta")}
           href={props.joinLink}
-          endIconName="linkIcon"
         />
       </div>
       <p

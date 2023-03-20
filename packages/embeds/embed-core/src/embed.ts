@@ -23,7 +23,7 @@ type Config = {
   uiDebug?: boolean;
 };
 
-const globalCal = window.Cal;
+const globalCal = (window as CalWindow).Cal;
 if (!globalCal || !globalCal.q) {
   throw new Error("Cal is not defined. This shouldn't happen");
 }
@@ -270,9 +270,8 @@ export class Cal {
     if (!element) {
       throw new Error("Element not found");
     }
-    element.classList.add("cal-inline-container");
     const template = document.createElement("template");
-    template.innerHTML = `<cal-inline style="max-height:inherit;height:inherit;min-height:inherit;display:flex;position:relative;flex-wrap:wrap;width:100%"></cal-inline><style>.cal-inline-container::-webkit-scrollbar{display:none}.cal-inline-container{scrollbar-width:none}</style>`;
+    template.innerHTML = `<cal-inline style="max-height:inherit;height:inherit;min-height:inherit;display:flex;position:relative;flex-wrap:wrap;width:100%"></cal-inline>`;
     this.inlineEl = template.content.children[0];
     (this.inlineEl as unknown as any).__CalAutoScroll = config.__autoScroll;
     this.inlineEl.appendChild(iframe);
@@ -305,32 +304,27 @@ export class Cal {
     //     },
     //   },
     // });
-    let existingEl: HTMLElement | null = null;
-
+    let attributesString = "";
+    let existingEl = null;
     if (attributes?.id) {
+      attributesString += ` id="${attributes.id}"`;
       existingEl = document.getElementById(attributes.id);
     }
-    let el: HTMLElement;
+    let el = existingEl;
     if (!existingEl) {
-      el = document.createElement("cal-floating-button");
-      el.dataset.calLink = calLink;
-      el.dataset.calNamespace = this.namespace;
-      if (attributes?.id) {
-        el.id = attributes.id;
-      }
-
-      document.body.appendChild(el);
-    } else {
-      el = existingEl;
+      const template = document.createElement("template");
+      template.innerHTML = `<cal-floating-button ${attributesString}  data-cal-namespace="${this.namespace}" data-cal-link="${calLink}"></cal-floating-button>`;
+      el = template.content.children[0] as HTMLElement;
+      document.body.appendChild(template.content);
     }
 
     if (buttonText) {
-      el.setAttribute("data-button-text", buttonText);
+      el!.setAttribute("data-button-text", buttonText);
     }
-    el.setAttribute("data-hide-button-icon", "" + hideButtonIcon);
-    el.setAttribute("data-button-position", "" + buttonPosition);
-    el.setAttribute("data-button-color", "" + buttonColor);
-    el.setAttribute("data-button-text-color", "" + buttonTextColor);
+    el!.setAttribute("data-hide-button-icon", "" + hideButtonIcon);
+    el!.setAttribute("data-button-position", "" + buttonPosition);
+    el!.setAttribute("data-button-color", "" + buttonColor);
+    el!.setAttribute("data-button-text-color", "" + buttonTextColor);
   }
 
   modal({ calLink, config = {}, uid }: { calLink: string; config?: Record<string, string>; uid: number }) {
@@ -535,12 +529,6 @@ export interface GlobalCal {
   __css?: string;
   fingerprint?: string;
   __logQueue?: any[];
-}
-
-declare global {
-  interface Window {
-    Cal?: GlobalCal;
-  }
 }
 
 export interface CalWindow extends Window {

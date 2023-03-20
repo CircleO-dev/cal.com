@@ -1,3 +1,4 @@
+import type { GetServerSidePropsContext } from "next";
 import { Controller, useForm } from "react-hook-form";
 
 import ThemeLabel from "@calcom/features/settings/ThemeLabel";
@@ -18,6 +19,8 @@ import {
   Switch,
   UpgradeTeamsBadge,
 } from "@calcom/ui";
+
+import { ssrInit } from "@server/lib/ssr";
 
 const SkeletonLoader = ({ title, description }: { title: string; description: string }) => {
   return (
@@ -211,5 +214,15 @@ const AppearanceView = () => {
 };
 
 AppearanceView.getLayout = getLayout;
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const ssr = await ssrInit(context);
+
+  return {
+    props: {
+      trpcState: ssr.dehydrate(),
+    },
+  };
+};
 
 export default AppearanceView;

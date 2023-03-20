@@ -18,17 +18,12 @@ module.exports = {
     "jsx-a11y/role-supports-aria-props": "off", // @see https://github.com/vercel/next.js/issues/27989#issuecomment-897638654
     "react/jsx-curly-brace-presence": ["error", { props: "never", children: "never" }],
     "react/self-closing-comp": ["error", { component: true, html: true }],
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      {
-        vars: "all",
-        varsIgnorePattern: "^_",
-        args: "after-used",
-        argsIgnorePattern: "^_",
-        destructuredArrayIgnorePattern: "^_",
-      },
-    ],
+    "@typescript-eslint/no-unused-vars": "off",
     "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      { vars: "all", varsIgnorePattern: "^_", args: "after-used", argsIgnorePattern: "^_" },
+    ],
   },
   overrides: [
     {
@@ -50,18 +45,16 @@ module.exports = {
       },
       overrides: [
         {
-          files: ["**/playwright/**/*.{tsx,ts}"],
+          files: ["playwright/**/*.{tsx,ts}"],
           rules: {
-            "@typescript-eslint/no-unused-vars": "off",
             "no-undef": "off",
           },
         },
       ],
     },
     {
-      files: ["**/playwright/**/*.{js,jsx}"],
+      files: ["playwright/**/*.{js,jsx}"],
       rules: {
-        "@typescript-eslint/no-unused-vars": "off",
         "no-undef": "off",
       },
     },

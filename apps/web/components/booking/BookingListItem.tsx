@@ -46,10 +46,7 @@ function BookingListItem(booking: BookingItemProps) {
   // Get user so we can determine 12/24 hour format preferences
   const query = useMeQuery();
   const user = query.data;
-  const {
-    t,
-    i18n: { language },
-  } = useLocale();
+  const { t } = useLocale();
   const utils = trpc.useContext();
   const router = useRouter();
   const [rejectionReason, setRejectionReason] = useState<string>("");
@@ -97,13 +94,6 @@ function BookingListItem(booking: BookingItemProps) {
     mutation.mutate(body);
   };
 
-  const getSeatReferenceUid = () => {
-    if (!booking.seatsReferences[0]) {
-      return undefined;
-    }
-    return booking.seatsReferences[0].referenceUid;
-  };
-
   const pendingActions: ActionType[] = [
     {
       id: "reject",
@@ -145,8 +135,7 @@ function BookingListItem(booking: BookingItemProps) {
          cancel all remaining bookings or just that booking instance. */
       href: `/booking/${booking.uid}?cancel=true${
         isTabRecurring && isRecurring ? "&allRemainingBookings=true" : ""
-      }${booking.seatsReferences.length ? `&seatReferenceUid=${getSeatReferenceUid()}` : ""}
-      `,
+      }`,
       icon: FiX,
     },
     {
@@ -157,9 +146,7 @@ function BookingListItem(booking: BookingItemProps) {
           id: "reschedule",
           icon: FiClock,
           label: t("reschedule_booking"),
-          href: `/reschedule/${booking.uid}${
-            booking.seatsReferences.length ? `?seatReferenceUid=${getSeatReferenceUid()}` : ""
-          }`,
+          href: `/reschedule/${booking.uid}`,
         },
         {
           id: "reschedule_request",
@@ -192,15 +179,14 @@ function BookingListItem(booking: BookingItemProps) {
 
   const RequestSentMessage = () => {
     return (
-      <Badge startIcon={FiSend} size="md" variant="gray" data-testid="request_reschedule_sent">
-        {t("reschedule_request_sent")}
-      </Badge>
+      <div className="ml-1 mr-8 flex text-gray-500" data-testid="request_reschedule_sent">
+        <FiSend className="-mt-[1px] w-4 rotate-45" />
+        <p className="ml-2 ">{t("reschedule_request_sent")}</p>
+      </div>
     );
   };
 
-  const startTime = dayjs(booking.startTime)
-    .locale(language)
-    .format(isUpcoming ? "ddd, D MMM" : "D MMMM YYYY");
+  const startTime = dayjs(booking.startTime).format(isUpcoming ? "ddd, D MMM" : "D MMMM YYYY");
   const [isOpenRescheduleDialog, setIsOpenRescheduleDialog] = useState(false);
   const [isOpenSetLocationDialog, setIsOpenLocationDialog] = useState(false);
   const setLocationMutation = trpc.viewer.bookings.editLocation.useMutation({
@@ -237,8 +223,6 @@ function BookingListItem(booking: BookingItemProps) {
   };
   const showRecordingsButtons =
     (booking.location === "integrations:daily" || booking?.location?.trim() === "") && isPast && isConfirmed;
-
-  const title = booking.title;
   return (
     <>
       <RescheduleDialog
@@ -371,12 +355,12 @@ function BookingListItem(booking: BookingItemProps) {
 
           <div className="cursor-pointer py-4">
             <div
-              title={title}
+              title={booking.title}
               className={classNames(
                 "max-w-10/12 sm:max-w-56 text-sm font-medium leading-6 text-gray-900 md:max-w-full",
                 isCancelled ? "line-through" : ""
               )}>
-              {title}
+              {booking.title}
               <span> </span>
 
               {!!booking?.eventType?.price && !booking.paid && (
@@ -400,13 +384,13 @@ function BookingListItem(booking: BookingItemProps) {
               />
             )}
             {isCancelled && booking.rescheduled && (
-              <div className="mt-2 inline-block md:hidden">
+              <div className="mt-2 inline-block text-left text-sm md:hidden">
                 <RequestSentMessage />
               </div>
             )}
           </div>
         </td>
-        <td className="flex w-full justify-end py-4 pl-4 text-right text-sm font-medium ltr:pr-4 rtl:pl-4 sm:pl-0">
+        <td className="py-4 pl-4 text-right text-sm font-medium ltr:pr-4 rtl:pl-4 sm:pl-0">
           {isUpcoming && !isCancelled ? (
             <>
               {isPending && user?.id === booking.user?.id && <TableActions actions={pendingActions} />}
@@ -436,10 +420,7 @@ const RecurringBookingsTooltip = ({ booking, recurringDates }: RecurringBookings
   // Get user so we can determine 12/24 hour format preferences
   const query = useMeQuery();
   const user = query.data;
-  const {
-    t,
-    i18n: { language },
-  } = useLocale();
+  const { t } = useLocale();
   const now = new Date();
   const recurringCount = recurringDates.filter((date) => {
     return (
@@ -469,7 +450,7 @@ const RecurringBookingsTooltip = ({ booking, recurringDates }: RecurringBookings
                   <p key={key} className={classNames(pastOrCancelled && "line-through")}>
                     {formatTime(aDate, user?.timeFormat, user?.timeZone)}
                     {" - "}
-                    {dayjs(aDate).locale(language).format("D MMMM YYYY")}
+                    {dayjs(aDate).format("D MMMM YYYY")}
                   </p>
                 );
               })}>

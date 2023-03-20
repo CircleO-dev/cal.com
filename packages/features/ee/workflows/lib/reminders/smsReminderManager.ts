@@ -1,15 +1,20 @@
-import type { TimeUnit } from "@prisma/client";
-import { WorkflowTriggerEvents, WorkflowTemplates, WorkflowActions, WorkflowMethods } from "@prisma/client";
+import {
+  WorkflowTriggerEvents,
+  TimeUnit,
+  WorkflowTemplates,
+  WorkflowActions,
+  WorkflowMethods,
+} from "@prisma/client";
 
 import dayjs from "@calcom/dayjs";
 import prisma from "@calcom/prisma";
-import type { Prisma } from "@calcom/prisma/client";
+import { Prisma } from "@calcom/prisma/client";
 import { bookingMetadataSchema } from "@calcom/prisma/zod-utils";
+import { Person } from "@calcom/types/Calendar";
 
 import { getSenderId } from "../alphanumericSenderIdSupport";
 import * as twilio from "./smsProviders/twilioProvider";
-import type { VariablesType } from "./templates/customTemplate";
-import customTemplate from "./templates/customTemplate";
+import customTemplate, { VariablesType } from "./templates/customTemplate";
 import smsReminderTemplate from "./templates/smsReminderTemplate";
 
 export enum timeUnitLowerCase {
@@ -49,8 +54,7 @@ export const scheduleSMSReminder = async (
   workflowStepId: number,
   template: WorkflowTemplates,
   sender: string,
-  userId?: number | null,
-  teamId?: number | null,
+  userId: number,
   isVerificationPending = false
 ) => {
   const { startTime, endTime } = evt;
@@ -66,10 +70,7 @@ export const scheduleSMSReminder = async (
   async function getIsNumberVerified() {
     if (action === WorkflowActions.SMS_ATTENDEE) return true;
     const verifiedNumber = await prisma.verifiedNumber.findFirst({
-      where: {
-        OR: [{ userId }, { teamId }],
-        phoneNumber: reminderPhone || "",
-      },
+      where: { userId, phoneNumber: reminderPhone || "" },
     });
     if (!!verifiedNumber) return true;
     return isVerificationPending;
@@ -174,16 +175,9 @@ export const scheduleSMSReminder = async (
   }
 };
 
-export const deleteScheduledSMSReminder = async (reminderId: number, referenceId: string | null) => {
+export const deleteScheduledSMSReminder = async (referenceId: string) => {
   try {
-    if (referenceId) {
-      await twilio.cancelSMS(referenceId);
-    }
-    await prisma.workflowReminder.delete({
-      where: {
-        id: reminderId,
-      },
-    });
+    await twilio.cancelSMS(referenceId);
   } catch (error) {
     console.log(`Error canceling reminder with error ${error}`);
   }

@@ -1,7 +1,21 @@
 const withBundleAnalyzer = require("@next/bundle-analyzer");
 
+const withTM = require("next-transpile-modules")([
+  "@calcom/app-store",
+  "@calcom/dayjs",
+  "@calcom/emails",
+  "@calcom/trpc",
+  "@calcom/embed-core",
+  "@calcom/embed-react",
+  "@calcom/features",
+  "@calcom/lib",
+  "@calcom/prisma",
+  "@calcom/ui",
+]);
+const glob = require("glob");
+
 const plugins = [];
-plugins.push(withBundleAnalyzer({ enabled: process.env.ANALYZE === "true" }));
+plugins.push(withTM, withBundleAnalyzer({ enabled: process.env.ANALYZE === "true" }));
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {
@@ -13,18 +27,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  transpilePackages: [
-    "@calcom/app-store",
-    "@calcom/dayjs",
-    "@calcom/emails",
-    "@calcom/trpc",
-    "@calcom/embed-core",
-    "@calcom/embed-react",
-    "@calcom/features",
-    "@calcom/lib",
-    "@calcom/prisma",
-    "@calcom/ui",
-  ],
+  experimental: { images: { allowFutureImage: true } },
   eslint: {
     ignoreDuringBuilds: true,
   },

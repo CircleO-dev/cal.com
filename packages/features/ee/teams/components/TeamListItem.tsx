@@ -5,10 +5,9 @@ import { useState } from "react";
 
 import MemberInvitationModal from "@calcom/ee/teams/components/MemberInvitationModal";
 import classNames from "@calcom/lib/classNames";
-import { getPlaceholderAvatar } from "@calcom/lib/defaultAvatarImage";
+import { getPlaceholderAvatar } from "@calcom/lib/getPlaceholderAvatar";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
-import type { RouterOutputs } from "@calcom/trpc/react";
-import { trpc } from "@calcom/trpc/react";
+import { RouterOutputs, trpc } from "@calcom/trpc/react";
 import {
   Avatar,
   Button,

@@ -1,4 +1,4 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
 export function getRequestedSlugError(error: unknown, requestedSlug: string) {
   let message = `Unknown error`;

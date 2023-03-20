@@ -3,8 +3,6 @@ import { expect } from "@playwright/test";
 import { test } from "./lib/fixtures";
 import { createHttpServer, selectFirstAvailableTimeSlotNextMonth, waitFor } from "./lib/testUtils";
 
-test.afterEach(({ users }) => users.deleteAll());
-
 test("add webhook & test that creating an event triggers a webhook call", async ({
   page,
   users,
@@ -72,62 +70,11 @@ test("add webhook & test that creating an event triggers a webhook call", async 
   body.payload.appsStatus = dynamic;
   body.payload.metadata.videoCallUrl = dynamic;
 
-  expect(body).toMatchObject({
-    triggerEvent: "BOOKING_CREATED",
-    createdAt: "[redacted/dynamic]",
-    payload: {
-      type: "30 min",
-      title: "30 min between Nameless and Test Testson",
-      description: "",
-      additionalNotes: "",
-      customInputs: {},
-      startTime: "[redacted/dynamic]",
-      endTime: "[redacted/dynamic]",
-      organizer: {
-        id: "[redacted/dynamic]",
-        name: "Nameless",
-        email: "[redacted/dynamic]",
-        timeZone: "[redacted/dynamic]",
-        language: "[redacted/dynamic]",
-      },
-      responses: {
-        email: {
-          value: "test@example.com",
-          label: "email_address",
-        },
-        name: {
-          value: "Test Testson",
-          label: "your_name",
-        },
-      },
-      userFieldsResponses: {},
-      attendees: [
-        {
-          email: "test@example.com",
-          name: "Test Testson",
-          timeZone: "[redacted/dynamic]",
-          language: "[redacted/dynamic]",
-        },
-      ],
-      location: "[redacted/dynamic]",
-      destinationCalendar: null,
-      hideCalendarNotes: false,
-      requiresConfirmation: "[redacted/dynamic]",
-      eventTypeId: "[redacted/dynamic]",
-      seatsShowAttendees: true,
-      seatsPerTimeSlot: null,
-      uid: "[redacted/dynamic]",
-      eventTitle: "30 min",
-      eventDescription: null,
-      price: 0,
-      currency: "usd",
-      length: 30,
-      bookingId: "[redacted/dynamic]",
-      metadata: { videoCallUrl: "[redacted/dynamic]" },
-      status: "ACCEPTED",
-      additionalInformation: "[redacted/dynamic]",
-    },
-  });
+  // if we change the shape of our webhooks, we can simply update this by clicking `u`
+  // console.log("BODY", body);
+  // Text files shouldn't have platform specific suffixes
+  testInfo.snapshotSuffix = "";
+  expect(JSON.stringify(body)).toMatchSnapshot(`webhookResponse.txt`);
 
   webhookReceiver.close();
 });

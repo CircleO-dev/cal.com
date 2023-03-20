@@ -113,7 +113,7 @@ const EventTypeScheduleDetails = () => {
   );
 
   const filterDays = (dayNum: number) =>
-    schedule?.schedule.filter((item) => item.days.includes((dayNum + 1) % 7)) || [];
+    schedule?.schedule.availability.filter((item) => item.days.includes((dayNum + 1) % 7)) || [];
 
   return (
     <div className="space-y-4 rounded border px-6 pb-4">
@@ -156,17 +156,14 @@ const EventTypeScheduleDetails = () => {
           <FiGlobe className="ltr:mr-2 rtl:ml-2" />
           {schedule?.timeZone || <SkeletonText className="block h-5 w-32" />}
         </span>
-        {!!schedule?.id && (
-          <Button
-            href={`/availability/${schedule.id}`}
-            disabled={isLoading}
-            color="minimal"
-            EndIcon={FiExternalLink}
-            target="_blank"
-            rel="noopener noreferrer">
-            {t("edit_availability")}
-          </Button>
-        )}
+        <Button
+          href={`/availability/${schedule?.schedule.id}`}
+          color="minimal"
+          EndIcon={FiExternalLink}
+          target="_blank"
+          rel="noopener noreferrer">
+          {t("edit_availability")}
+        </Button>
       </div>
     </div>
   );
