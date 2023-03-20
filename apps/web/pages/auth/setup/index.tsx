@@ -18,6 +18,7 @@ import EnterpriseLicense from "@components/setup/EnterpriseLicense";
 import { ssrInit } from "@server/lib/ssr";
 
 export default function Setup(props: inferSSRProps<typeof getServerSideProps>) {
+  props.isFreeLicense = true;
   const { t } = useLocale();
   const router = useRouter();
   const [value, setValue] = useState(props.isFreeLicense ? "FREE" : "EE");
@@ -66,31 +67,31 @@ export default function Setup(props: inferSSRProps<typeof getServerSideProps>) {
     },
   ];
 
-  if (!isFreeLicense) {
-    steps.push({
-      title: t("step_enterprise_license"),
-      description: t("step_enterprise_license_description"),
-      content: (setIsLoading) => {
-        const currentStep = 3;
-        return (
-          <EnterpriseLicense
-            id={`wizard-step-${currentStep}`}
-            name={`wizard-step-${currentStep}`}
-            onSubmit={() => {
-              setIsLoading(true);
-            }}
-            onSuccess={() => {
-              setStep(currentStep + 1);
-            }}
-            onSuccessValidate={() => {
-              setIsEnabledEE(true);
-            }}
-          />
-        );
-      },
-      isEnabled: isEnabledEE,
-    });
-  }
+  // if (!isFreeLicense) {
+  //   steps.push({
+  //     title: t("step_enterprise_license"),
+  //     description: t("step_enterprise_license_description"),
+  //     content: (setIsLoading) => {
+  //       const currentStep = 3;
+  //       return (
+  //         <EnterpriseLicense
+  //           id={`wizard-step-${currentStep}`}
+  //           name={`wizard-step-${currentStep}`}
+  //           onSubmit={() => {
+  //             setIsLoading(true);
+  //           }}
+  //           onSuccess={() => {
+  //             setStep(currentStep + 1);
+  //           }}
+  //           onSuccessValidate={() => {
+  //             setIsEnabledEE(true);
+  //           }}
+  //         />
+  //       );
+  //     },
+  //     isEnabled: isEnabledEE,
+  //   });
+  // }
 
   steps.push({
     title: t("enable_apps"),
