@@ -1,4 +1,4 @@
-import { PrismaClientKnownRequestError, NotFoundError } from "@prisma/client/runtime/library";
+import { PrismaClientKnownRequestError, NotFoundError } from "@prisma/client/runtime";
 import Stripe from "stripe";
 import type { ZodIssue } from "zod";
 import { ZodError } from "zod";

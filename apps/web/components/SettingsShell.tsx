@@ -10,7 +10,7 @@ import NavTabs from "./NavTabs";
 const tabs = [
   {
     name: "profile",
-    href: "/settings/my-account/profile",
+    href: "/settings/profile",
     icon: FiUser,
   },
   {

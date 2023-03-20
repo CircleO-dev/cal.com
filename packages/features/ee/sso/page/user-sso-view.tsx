@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 
 import { HOSTED_CAL_FEATURES } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -12,11 +11,9 @@ const SAMLSSO = () => {
   const { t } = useLocale();
   const router = useRouter();
 
-  useEffect(() => {
-    if (HOSTED_CAL_FEATURES) {
-      router.push("/404");
-    }
-  }, []);
+  if (HOSTED_CAL_FEATURES) {
+    router.push("/404");
+  }
 
   return (
     <div className="w-full bg-white sm:mx-0 xl:mt-0">

@@ -4,17 +4,15 @@ import { z } from "zod";
 import { getAggregateWorkingHours } from "@calcom/core/getAggregateWorkingHours";
 import type { CurrentSeats } from "@calcom/core/getUserAvailability";
 import { getUserAvailability } from "@calcom/core/getUserAvailability";
-import type { Dayjs } from "@calcom/dayjs";
-import dayjs from "@calcom/dayjs";
+import dayjs, { Dayjs } from "@calcom/dayjs";
 import { getDefaultEvent } from "@calcom/lib/defaultEvents";
 import isTimeOutOfBounds from "@calcom/lib/isOutOfBounds";
 import logger from "@calcom/lib/logger";
 import { performance } from "@calcom/lib/server/perfObserver";
 import getTimeSlots from "@calcom/lib/slots";
-import type prisma from "@calcom/prisma";
-import { availabilityUserSelect } from "@calcom/prisma";
+import prisma, { availabilityUserSelect } from "@calcom/prisma";
 import { EventTypeMetaDataSchema } from "@calcom/prisma/zod-utils";
-import type { EventBusyDate } from "@calcom/types/Calendar";
+import { EventBusyDate } from "@calcom/types/Calendar";
 
 import { TRPCError } from "@trpc/server";
 
@@ -125,7 +123,6 @@ async function getEventType(ctx: { prisma: typeof prisma }, input: z.infer<typeo
       beforeEventBuffer: true,
       afterEventBuffer: true,
       bookingLimits: true,
-      durationLimits: true,
       schedulingType: true,
       periodType: true,
       periodStartDate: true,
@@ -264,7 +261,6 @@ export async function getSchedule(input: z.infer<typeof getScheduleSchema>, ctx:
           eventTypeId: input.eventTypeId,
           afterEventBuffer: eventType.afterEventBuffer,
           beforeEventBuffer: eventType.beforeEventBuffer,
-          duration: input.duration || 0,
         },
         { user: currentUser, eventType, currentSeats }
       );
@@ -319,8 +315,6 @@ export async function getSchedule(input: z.infer<typeof getScheduleSchema>, ctx:
         dateOverrides,
         minimumBookingNotice: eventType.minimumBookingNotice,
         frequency: eventType.slotInterval || input.duration || eventType.length,
-        organizerTimeZone:
-          eventType.timeZone || eventType?.schedule?.timeZone || userAvailability?.[0]?.timeZone,
       })
     );
   }
@@ -369,10 +363,8 @@ export async function getSchedule(input: z.infer<typeof getScheduleSchema>, ctx:
   const computedAvailableSlots = availableTimeSlots.reduce(
     (
       r: Record<string, { time: string; users: string[]; attendees?: number; bookingUid?: string }[]>,
-      { time: _time, ...passThroughProps }
+      { time: time, ...passThroughProps }
     ) => {
-      // TODO: Adds unit tests to prevent regressions in getSchedule (try multiple timezones)
-      const time = _time.tz(input.timeZone);
       r[time.format("YYYY-MM-DD")] = r[time.format("YYYY-MM-DD")] || [];
       r[time.format("YYYY-MM-DD")].push({
         ...passThroughProps,

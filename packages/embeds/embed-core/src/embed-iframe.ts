@@ -330,27 +330,15 @@ function keepParentInformedAboutDimensionChanges() {
     // Use the dimensions of main element as in most places there is max-width restriction on it and we just want to show the main content.
     // It avoids the unwanted padding outside main tag.
     const mainElement =
-      document.getElementsByClassName("main")[0] ||
+      (document.getElementsByClassName("main")[0] as HTMLElement) ||
       document.getElementsByTagName("main")[0] ||
       document.documentElement;
     const documentScrollHeight = document.documentElement.scrollHeight;
     const documentScrollWidth = document.documentElement.scrollWidth;
 
-    if (!(mainElement instanceof HTMLElement)) {
-      throw new Error("Main element should be an HTMLElement");
-    }
+    const contentHeight = mainElement.offsetHeight;
+    const contentWidth = mainElement.offsetWidth;
 
-    const mainElementStyles = getComputedStyle(mainElement);
-    // Use, .height as that gives more accurate value in floating point. Also, do a ceil on the total sum so that whatever happens there is enough iframe size to avoid scroll.
-    const contentHeight = Math.ceil(
-      parseFloat(mainElementStyles.height) +
-      parseFloat(mainElementStyles.marginTop) +
-      parseFloat(mainElementStyles.marginBottom));
-    const contentWidth = Math.ceil(
-      parseFloat(mainElementStyles.width) +
-      parseFloat(mainElementStyles.marginLeft) +
-      parseFloat(mainElementStyles.marginRight));
-    
     // During first render let iframe tell parent that how much is the expected height to avoid scroll.
     // Parent would set the same value as the height of iframe which would prevent scroll.
     // On subsequent renders, consider html height as the height of the iframe. If we don't do this, then if iframe get's bigger in height, it would never shrink
@@ -427,14 +415,14 @@ if (isBrowser) {
     });
 
     document.addEventListener("click", (e) => {
-      if (!e.target || !(e.target instanceof Node)) {
+      if (!e.target) {
         return;
       }
       const mainElement =
-        document.getElementsByClassName("main")[0] ||
+        (document.getElementsByClassName("main")[0] as HTMLElement) ||
         document.getElementsByTagName("main")[0] ||
         document.documentElement;
-      if (e.target.contains(mainElement)) {
+      if ((e.target as HTMLElement).contains(mainElement)) {
         sdkActionManager?.fire("__closeIframe", {});
       }
     });

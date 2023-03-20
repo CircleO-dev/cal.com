@@ -14,4 +14,3 @@ public
 .DS_Store
 .eslintignore
 packages/prisma/zod
-apps/web/public/embed

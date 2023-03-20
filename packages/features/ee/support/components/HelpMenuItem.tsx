@@ -7,8 +7,6 @@ import { trpc } from "@calcom/trpc/react";
 import { Button, showToast } from "@calcom/ui";
 import { FiExternalLink, FiAlertTriangle } from "@calcom/ui/components/icon";
 
-import { useFreshChat } from "../lib/freshchat/FreshChatProvider";
-import { isFreshChatEnabled } from "../lib/freshchat/FreshChatScript";
 import ContactMenuItem from "./ContactMenuItem";
 
 interface HelpMenuItemProps {
@@ -22,8 +20,6 @@ export default function HelpMenuItem({ onHelpItemSelect }: HelpMenuItemProps) {
   const [active, setActive] = useState(false);
   const [, loadChat] = useChat();
   const { t } = useLocale();
-
-  const { setActive: setFreshChat } = useFreshChat();
 
   const mutation = trpc.viewer.submitFeedback.useMutation({
     onSuccess: () => {
@@ -48,7 +44,7 @@ export default function HelpMenuItem({ onHelpItemSelect }: HelpMenuItemProps) {
         <p className="mb-1 px-5 text-gray-500">{t("resources").toUpperCase()}</p>
         <a
           onClick={() => onHelpItemSelect()}
-          href="https://cal.com/docs/"
+          href="https://docs.cal.com/"
           target="_blank"
           className="flex w-full px-5 py-2 pr-4 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
           rel="noreferrer">
@@ -61,6 +57,7 @@ export default function HelpMenuItem({ onHelpItemSelect }: HelpMenuItemProps) {
           />
         </a>
         <a
+          onClick={() => onHelpItemSelect()}
           href="https://developer.cal.com/"
           target="_blank"
           className="flex w-full px-5 py-2 pr-4 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
@@ -73,12 +70,12 @@ export default function HelpMenuItem({ onHelpItemSelect }: HelpMenuItemProps) {
             )}
           />
         </a>
-        <div>
-          <ContactMenuItem onHelpItemSelect={onHelpItemSelect} />
+        <div onClick={() => onHelpItemSelect()}>
+          <ContactMenuItem />
         </div>
       </div>
 
-      <hr className="bg-gray-200 " />
+      <hr className=" bg-gray-200" />
       <div className="w-full p-5">
         <p className="mb-1 text-gray-500">{t("feedback").toUpperCase()}</p>
         <p className="flex w-full py-2 text-sm font-medium text-gray-700">{t("comments")}</p>
@@ -87,7 +84,7 @@ export default function HelpMenuItem({ onHelpItemSelect }: HelpMenuItemProps) {
           name="comment"
           rows={3}
           onChange={(event) => setComment(event.target.value)}
-          className="my-1 block w-full rounded-sm border-gray-300 py-2 pb-2 text-sm"
+          className="my-1 block  w-full rounded-sm border-gray-300 py-2 pb-2 text-sm"
         />
 
         <div className="my-3 flex justify-end">
@@ -202,14 +199,10 @@ export default function HelpMenuItem({ onHelpItemSelect }: HelpMenuItemProps) {
       <div className="w-full bg-neutral-50 p-5 text-gray-500">
         <p className="">{t("specific_issue")}</p>
         <button
-          className="font-medium underline hover:text-gray-700"
+          className="font-medium  underline hover:text-gray-700"
           onClick={() => {
             setActive(true);
-            if (isFreshChatEnabled) {
-              setFreshChat(true);
-            } else {
-              loadChat({ open: true });
-            }
+            loadChat({ open: true });
             onHelpItemSelect();
           }}>
           {t("contact_support")}
@@ -217,8 +210,8 @@ export default function HelpMenuItem({ onHelpItemSelect }: HelpMenuItemProps) {
         <span> {t("or").toLowerCase()} </span>
         <a
           onClick={() => onHelpItemSelect()}
-          className="font-medium underline hover:text-gray-700"
-          href="https://cal.com/docs/"
+          className="font-medium  underline hover:text-gray-700"
+          href="https://docs.cal.com/"
           target="_blank"
           rel="noreferrer">
           {t("browse_our_docs")}

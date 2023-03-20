@@ -1,3 +1,4 @@
+import type { CalWindow } from "../embed";
 import getFloatingButtonHtml from "./FloatingButtonHtml";
 
 export class FloatingButton extends HTMLElement {
@@ -22,31 +23,31 @@ export class FloatingButton extends HTMLElement {
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === "data-button-text") {
-      const buttonEl = this.shadowRoot?.querySelector<HTMLElement>("#button");
+      const buttonEl = this.shadowRoot?.querySelector("#button");
       if (!buttonEl) {
         throw new Error("Button not found");
       }
-      buttonEl.textContent = newValue;
+      buttonEl.innerHTML = newValue;
     } else if (name === "data-hide-button-icon") {
-      const buttonIconEl = this.shadowRoot?.querySelector<HTMLElement>("#button-icon");
+      const buttonIconEl = this.shadowRoot?.querySelector("#button-icon") as HTMLElement;
       if (!buttonIconEl) {
         throw new Error("Button not found");
       }
       buttonIconEl.style.display = newValue == "true" ? "none" : "block";
     } else if (name === "data-button-position") {
-      const buttonEl = this.shadowRoot?.querySelector<HTMLElement>("button");
+      const buttonEl = this.shadowRoot?.querySelector("button") as HTMLElement;
       if (!buttonEl) {
         throw new Error("Button not found");
       }
       buttonEl.className = FloatingButton.updatedClassString(newValue, buttonEl.className);
     } else if (name === "data-button-color") {
-      const buttonEl = this.shadowRoot?.querySelector<HTMLElement>("button");
+      const buttonEl = this.shadowRoot?.querySelector("button") as HTMLElement;
       if (!buttonEl) {
         throw new Error("Button not found");
       }
       buttonEl.style.backgroundColor = newValue;
     } else if (name === "data-button-text-color") {
-      const buttonEl = this.shadowRoot?.querySelector<HTMLElement>("button");
+      const buttonEl = this.shadowRoot?.querySelector("button") as HTMLElement;
       if (!buttonEl) {
         throw new Error("Button not found");
       }
@@ -61,7 +62,7 @@ export class FloatingButton extends HTMLElement {
     const buttonTextColor = this.dataset["buttonTextColor"];
 
     //TODO: Logic is duplicated over HTML generation and attribute change, keep it at one place
-    const buttonHtml = `<style>${window.Cal!.__css}</style> ${getFloatingButtonHtml({
+    const buttonHtml = `<style>${(window as CalWindow).Cal!.__css}</style> ${getFloatingButtonHtml({
       buttonText: buttonText!,
       buttonClasses: [FloatingButton.updatedClassString(buttonPosition!, "")],
       buttonColor: buttonColor!,

@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import React from "react";
-import type { ITimezone } from "react-timezone-select";
+import { ITimezone } from "react-timezone-select";
 
-import type { Dayjs } from "@calcom/dayjs";
+import { Dayjs } from "@calcom/dayjs";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import getSlots from "@calcom/lib/slots";
 import { trpc } from "@calcom/trpc/react";
@@ -42,7 +42,6 @@ export default function TeamAvailabilityTimes(props: Props) {
         workingHours: data?.workingHours || [],
         minimumBookingNotice: 0,
         eventLength: props.frequency,
-        organizerTimeZone: `${data?.timeZone}`,
       })
     : [];
 

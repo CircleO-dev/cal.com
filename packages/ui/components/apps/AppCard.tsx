@@ -88,7 +88,6 @@ export function AppCard({ app, credentials, searchText }: AppCardProps) {
               <InstallAppButton
                 type={app.type}
                 isProOnly={app.isProOnly}
-                disableInstall={!!app.dependencies && !app.dependencyData?.some((data) => !data.installed)}
                 wrapperClassName="[@media(max-width:260px)]:w-full"
                 render={({ useDefaultComponent, ...props }) => {
                   if (useDefaultComponent) {
@@ -117,7 +116,6 @@ export function AppCard({ app, credentials, searchText }: AppCardProps) {
                 type={app.type}
                 isProOnly={app.isProOnly}
                 wrapperClassName="[@media(max-width:260px)]:w-full"
-                disableInstall={!!app.dependencies && app.dependencyData?.some((data) => !data.installed)}
                 render={({ useDefaultComponent, ...props }) => {
                   if (useDefaultComponent) {
                     props = {
@@ -125,7 +123,6 @@ export function AppCard({ app, credentials, searchText }: AppCardProps) {
                       onClick: () => {
                         mutation.mutate({ type: app.type, variant: app.variant, slug: app.slug });
                       },
-                      disabled: !!props.disabled,
                     };
                   }
                   return (
@@ -152,7 +149,7 @@ export function AppCard({ app, credentials, searchText }: AppCardProps) {
           <span className="rounded-md bg-red-100 px-2 py-1 text-sm font-normal text-red-800">Template</span>
         )}
 
-        {(app.isDefault || (!app.isDefault && app.isGlobal)) && (
+        {app.isGlobal && (
           <span className="flex items-center rounded-md bg-gray-100 px-2 py-1 text-sm font-normal text-gray-800">
             {t("default")}
           </span>

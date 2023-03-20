@@ -71,10 +71,6 @@ export default class GoogleCalendarService implements Calendar {
   };
 
   async createEvent(calEventRaw: CalendarEvent): Promise<NewCalendarEventType> {
-    const eventAttendees = calEventRaw.attendees.map(({ id, ...rest }) => ({
-      ...rest,
-      responseStatus: "accepted",
-    }));
     return new Promise(async (resolve, reject) => {
       const myGoogleAuth = await this.auth.getToken();
       const payload: calendar_v3.Schema$Event = {
@@ -92,18 +88,19 @@ export default class GoogleCalendarService implements Calendar {
           {
             ...calEventRaw.organizer,
             id: String(calEventRaw.organizer.id),
-            responseStatus: "accepted",
             organizer: true,
-            email: calEventRaw.destinationCalendar?.externalId
-              ? calEventRaw.destinationCalendar.externalId
-              : calEventRaw.organizer.email,
+            responseStatus: "accepted",
           },
-          ...eventAttendees,
+          // eslint-disable-next-line
+          ...calEventRaw.attendees.map(({ id, ...rest }) => ({
+            ...rest,
+            responseStatus: "accepted",
+          })),
         ],
         reminders: {
           useDefault: true,
         },
-        guestsCanSeeOtherGuests: !!calEventRaw.seatsPerTimeSlot ? calEventRaw.seatsShowAttendees : true,
+        guestsCanSeeOtherGuests: calEventRaw.seatsShowAttendees,
       };
 
       if (calEventRaw.location) {
@@ -193,7 +190,7 @@ export default class GoogleCalendarService implements Calendar {
         reminders: {
           useDefault: true,
         },
-        guestsCanSeeOtherGuests: !!event.seatsPerTimeSlot ? event.seatsShowAttendees : true,
+        guestsCanSeeOtherGuests: event.seatsShowAttendees,
       };
 
       if (event.location) {

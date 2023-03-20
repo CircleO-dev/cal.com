@@ -1,7 +1,7 @@
-import type { GetRecordingsResponseSchema, GetAccessLinkResponseSchema } from "@calcom/prisma/zod-utils";
+import { GetRecordingsResponseSchema } from "@calcom/prisma/zod-utils";
 
 import type { EventBusyDate } from "./Calendar";
-import type { CredentialPayload } from "./Credential";
+import { CredentialPayload } from "./Credential";
 
 export interface VideoCallData {
   type: string;
@@ -22,8 +22,6 @@ export type VideoApiAdapter =
       getAvailability(dateFrom?: string, dateTo?: string): Promise<EventBusyDate[]>;
 
       getRecordings?(roomName: string): Promise<GetRecordingsResponseSchema>;
-
-      getRecordingDownloadLink?(recordingId: string): Promise<GetAccessLinkResponseSchema>;
     }
   | undefined;
 

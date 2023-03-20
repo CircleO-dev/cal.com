@@ -35,14 +35,8 @@ const config: Config = {
       displayName: "@calcom/lib",
       roots: ["<rootDir>/packages/lib"],
       testEnvironment: "node",
-      moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
       transform: {
         "^.+\\.tsx?$": "ts-jest",
-      },
-      globals: {
-        "ts-jest": {
-          tsconfig: "<rootDir>/packages/lib/tsconfig.test.json",
-        },
       },
     },
     {
@@ -58,7 +52,7 @@ const config: Config = {
     },
     {
       displayName: "@calcom/routing-forms",
-      roots: ["<rootDir>/packages/app-store/routing-forms"],
+      roots: ["<rootDir>/packages/app-store/ee/routing-forms"],
       testMatch: ["**/test/lib/**/*.(spec|test).(ts|tsx|js)"],
       transform: {
         "^.+\\.ts?$": "ts-jest",

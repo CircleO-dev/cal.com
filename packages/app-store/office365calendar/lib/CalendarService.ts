@@ -1,7 +1,5 @@
 import type { Calendar as OfficeCalendar, User } from "@microsoft/microsoft-graph-types-beta";
-import { z } from "zod";
 
-import dayjs from "@calcom/dayjs";
 import { getLocation, getRichDescription } from "@calcom/lib/CalEventParser";
 import { handleErrorsJson, handleErrorsRaw } from "@calcom/lib/errors";
 import logger from "@calcom/lib/logger";
@@ -39,14 +37,6 @@ interface IBatchResponse {
   responses: ISettledResponse[];
 }
 
-const refreshTokenResponseSchema = z.object({
-  access_token: z.string(),
-  expires_in: z
-    .number()
-    .transform((currentTimeOffsetInSeconds) => Math.round(+new Date() / 1000 + currentTimeOffsetInSeconds)),
-  refresh_token: z.string().optional(),
-});
-
 export default class Office365CalendarService implements Calendar {
   private url = "";
   private integrationName = "";
@@ -64,11 +54,11 @@ export default class Office365CalendarService implements Calendar {
 
   async createEvent(event: CalendarEvent): Promise<NewCalendarEventType> {
     try {
-      const eventsUrl = event.destinationCalendar?.externalId
-        ? `/me/calendars/${event.destinationCalendar?.externalId}/events`
-        : "/me/calendar/events";
+      const calendarId = event.destinationCalendar?.externalId
+        ? `${event.destinationCalendar.externalId}/`
+        : "";
 
-      const response = await this.fetcher(eventsUrl, {
+      const response = await this.fetcher(`/me/calendars/${calendarId}events`, {
         method: "POST",
         body: JSON.stringify(this.translateEvent(event)),
       });
@@ -210,13 +200,7 @@ export default class Office365CalendarService implements Calendar {
   }
 
   private o365Auth = (credential: CredentialPayload) => {
-    const isExpired = (expiryDate: number) => {
-      if (!expiryDate) {
-        return true;
-      } else {
-        return expiryDate < Math.round(+new Date() / 1000);
-      }
-    };
+    const isExpired = (expiryDate: number) => expiryDate < Math.round(+new Date() / 1000);
     const o365AuthCredentials = credential.key as O365AuthCredentials;
 
     const refreshAccessToken = async (refreshToken: string) => {
@@ -232,7 +216,9 @@ export default class Office365CalendarService implements Calendar {
           client_secret,
         }),
       });
-      const o365AuthCredentials = refreshTokenResponseSchema.parse(await handleErrorsJson(response));
+      const responseBody = await handleErrorsJson<{ access_token: string; expires_in: number }>(response);
+      o365AuthCredentials.access_token = responseBody.access_token;
+      o365AuthCredentials.expiry_date = Math.round(+new Date() / 1000 + responseBody.expires_in);
       await prisma.credential.update({
         where: {
           id: credential.id,
@@ -246,7 +232,7 @@ export default class Office365CalendarService implements Calendar {
 
     return {
       getToken: () =>
-        !isExpired(o365AuthCredentials.expires_in)
+        !isExpired(o365AuthCredentials.expiry_date)
           ? Promise.resolve(o365AuthCredentials.access_token)
           : refreshAccessToken(o365AuthCredentials.refresh_token),
     };
@@ -260,11 +246,11 @@ export default class Office365CalendarService implements Calendar {
         content: getRichDescription(event),
       },
       start: {
-        dateTime: dayjs(event.startTime).tz(event.organizer.timeZone).format("YYYY-MM-DDTHH:mm:ss"),
+        dateTime: event.startTime,
         timeZone: event.organizer.timeZone,
       },
       end: {
-        dateTime: dayjs(event.endTime).tz(event.organizer.timeZone).format("YYYY-MM-DDTHH:mm:ss"),
+        dateTime: event.endTime,
         timeZone: event.organizer.timeZone,
       },
       attendees: event.attendees.map((attendee) => ({

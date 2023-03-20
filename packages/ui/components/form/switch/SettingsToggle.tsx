@@ -12,7 +12,6 @@ type Props = {
   disabled?: boolean;
   onCheckedChange?: (checked: boolean) => void;
   "data-testid"?: string;
-  tooltip?: string;
 };
 
 function SettingsToggle({
@@ -22,7 +21,6 @@ function SettingsToggle({
   title,
   children,
   disabled,
-  tooltip,
   ...rest
 }: Props) {
   const [animateRef] = useAutoAnimate<HTMLDivElement>();
@@ -38,10 +36,9 @@ function SettingsToggle({
               checked={checked}
               onCheckedChange={onCheckedChange}
               disabled={disabled}
-              tooltip={tooltip}
             />
 
-            <div>
+            <div className="">
               <Label className="text-sm font-semibold leading-none text-black">{title}</Label>
               {description && <p className="-mt-1.5 text-sm leading-normal text-gray-600">{description}</p>}
             </div>

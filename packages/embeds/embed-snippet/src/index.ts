@@ -49,7 +49,7 @@ export default function EmbedSnippet(url = EMBED_LIB_URL) {
   );
   /*!  Copying ends here. */
 
-  return window.Cal;
+  return (window as CalWindow).Cal;
 }
 
 export const EmbedSnippetString = EmbedSnippet.toString();

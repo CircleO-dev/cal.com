@@ -10,7 +10,7 @@ import { trpc } from "@calcom/trpc/react";
 import { Avatar, Button, Form, ImageUploader, TextField } from "@calcom/ui";
 import { FiArrowRight } from "@calcom/ui/components/icon";
 
-import type { NewTeamFormValues } from "../lib/types";
+import { NewTeamFormValues } from "../lib/types";
 
 const querySchema = z.object({
   returnTo: z.string(),
@@ -140,14 +140,10 @@ export const CreateANewTeamForm = () => {
             {t("cancel")}
           </Button>
           <Button
-            disabled={
-              newTeamFormMethods.formState.isSubmitting ||
-              createTeamMutation.isError ||
-              createTeamMutation.isLoading
-            }
+            disabled={createTeamMutation.isLoading}
             color="primary"
-            EndIcon={FiArrowRight}
             type="submit"
+            EndIcon={FiArrowRight}
             className="w-full justify-center">
             {t("continue")}
           </Button>

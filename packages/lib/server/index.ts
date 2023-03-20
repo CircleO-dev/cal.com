@@ -1,5 +1,4 @@
-export { checkBookingLimits, checkBookingLimit } from "./checkBookingLimits";
-export { checkDurationLimits, checkDurationLimit } from "./checkDurationLimits";
+export { checkBookingLimits, checkLimit } from "./checkBookingLimits";
 
 export { defaultHandler } from "./defaultHandler";
 export { defaultResponder } from "./defaultResponder";

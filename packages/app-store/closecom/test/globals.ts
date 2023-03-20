@@ -13,5 +13,3 @@ jest.mock("@calcom/lib/crypto", () => ({
       "userApiKey": "test"
     }`,
 }));
-
-export {};

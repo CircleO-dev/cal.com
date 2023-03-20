@@ -1,10 +1,9 @@
 import classNames from "classnames";
 import { useEffect, useState } from "react";
-import type { OptionProps, SingleValueProps } from "react-select";
-import { components } from "react-select";
+import { components, OptionProps, SingleValueProps } from "react-select";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
-import type { DestinationCalendar } from "@calcom/prisma/client";
+import { DestinationCalendar } from "@calcom/prisma/client";
 import { trpc } from "@calcom/trpc/react";
 import { Select } from "@calcom/ui";
 
@@ -118,6 +117,10 @@ const DestinationCalendarSelector = ({
         })),
     })) ?? [];
 
+  // Get primary calendar, which is shown in the placeholder since this is the calendar that will
+  // be used when no destination calendar is selected.
+  const primaryCalendar = query.data.destinationCalendarEmail;
+
   const queryDestinationCalendar = query.data.destinationCalendar;
 
   return (
@@ -131,7 +134,7 @@ const DestinationCalendarSelector = ({
             <span className="min-w-0 overflow-hidden truncate whitespace-nowrap">
               {t("default_calendar_selected")}{" "}
               {queryDestinationCalendar.name &&
-                `| ${queryDestinationCalendar.name} (${queryDestinationCalendar?.integrationTitle} - ${queryDestinationCalendar.primaryEmail})`}
+                `(${queryDestinationCalendar?.integration} - ${queryDestinationCalendar.name})`}
             </span>
           )
         }
@@ -139,6 +142,16 @@ const DestinationCalendarSelector = ({
         styles={{
           placeholder: (styles) => ({ ...styles, ...content(hidePlaceholder) }),
           singleValue: (styles) => ({ ...styles, ...content(hidePlaceholder) }),
+          option: (defaultStyles, state) => ({
+            ...defaultStyles,
+            backgroundColor: state.isSelected
+              ? state.isFocused
+                ? "var(--brand-color)"
+                : "var(--brand-color)"
+              : state.isFocused
+              ? "var(--brand-color-dark-mode)"
+              : "var(--brand-text-color)",
+          }),
           control: (defaultStyles) => {
             return {
               ...defaultStyles,

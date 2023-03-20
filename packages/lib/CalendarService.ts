@@ -4,7 +4,7 @@ import type { Prisma } from "@prisma/client";
 import ICAL from "ical.js";
 import type { Attendee, DateArray, DurationObject, Person } from "ics";
 import { createEvent } from "ics";
-import type { DAVAccount, DAVCalendar } from "tsdav";
+import type { DAVAccount } from "tsdav";
 import {
   createAccount,
   createCalendarObject,
@@ -293,7 +293,6 @@ export default abstract class BaseCalendarService implements Calendar {
     dateTo: string,
     selectedCalendars: IntegrationCalendar[]
   ): Promise<EventBusyDate[]> {
-    const startISOString = new Date(dateFrom).toISOString();
     const objects = (
       await Promise.all(
         selectedCalendars
@@ -307,7 +306,7 @@ export default abstract class BaseCalendarService implements Calendar {
               headers: this.headers,
               expand: true,
               timeRange: {
-                start: startISOString,
+                start: new Date(dateFrom).toISOString(),
                 end: new Date(dateTo).toISOString(),
               },
             })
@@ -360,24 +359,15 @@ export default abstract class BaseCalendarService implements Calendar {
 
         const start = dayjs(dateFrom);
         const end = dayjs(dateTo);
-        const startDate = ICAL.Time.fromDateTimeString(startISOString);
-        startDate.hour = event.startDate.hour;
-        startDate.minute = event.startDate.minute;
-        startDate.second = event.startDate.second;
-        const iterator = event.iterator(startDate);
-        let current: ICAL.Time;
+        const iterator = event.iterator();
+        let current;
         let currentEvent;
-        let currentStart = null;
+        let currentStart;
         let currentError;
 
-        while (
-          maxIterations > 0 &&
-          (currentStart === null || currentStart.isAfter(end) === false) &&
-          // this iterator was poorly implemented, normally done is expected to be
-          // returned
-          (current = iterator.next())
-        ) {
+        do {
           maxIterations -= 1;
+          current = iterator.next();
 
           try {
             // @see https://github.com/mozilla-comm/ical.js/issues/514
@@ -405,7 +395,7 @@ export default abstract class BaseCalendarService implements Calendar {
               end: dayjs(currentEvent.endDate.toJSDate()).toISOString(),
             });
           }
-        }
+        } while (maxIterations > 0 && currentStart.isAfter(end) === false);
         if (maxIterations <= 0) {
           console.warn("could not find any occurrence for recurring event in 365 iterations");
         }
@@ -431,20 +421,17 @@ export default abstract class BaseCalendarService implements Calendar {
     try {
       const account = await this.getAccount();
 
-      const calendars = (await fetchCalendars({
+      const calendars = await fetchCalendars({
         account,
         headers: this.headers,
-      })) /** @url https://github.com/natelindev/tsdav/pull/139 */ as (Omit<DAVCalendar, "displayName"> & {
-        displayName?: string | Record<string, unknown>;
-      })[];
+      });
 
       return calendars.reduce<IntegrationCalendar[]>((newCalendars, calendar) => {
         if (!calendar.components?.includes("VEVENT")) return newCalendars;
 
         newCalendars.push({
           externalId: calendar.url,
-          /** @url https://github.com/calcom/cal.com/issues/7186 */
-          name: typeof calendar.displayName === "string" ? calendar.displayName : "",
+          name: calendar.displayName ?? "",
           primary: event?.destinationCalendar?.externalId
             ? event.destinationCalendar.externalId === calendar.url
             : false,
