@@ -1,8 +1,10 @@
 import type { User } from "@prisma/client";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { NextRouter, useRouter } from "next/router";
-import React, { Dispatch, Fragment, ReactNode, SetStateAction, useEffect, useState } from "react";
+import type { NextRouter } from "next/router";
+import { useRouter } from "next/router";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 
 import dayjs from "@calcom/dayjs";
@@ -13,7 +15,6 @@ import HelpMenuItem from "@calcom/features/ee/support/components/HelpMenuItem";
 import { TeamsUpgradeBanner } from "@calcom/features/ee/teams/components";
 import { KBarContent, KBarRoot, KBarTrigger } from "@calcom/features/kbar/Kbar";
 import TimezoneChangeDialog from "@calcom/features/settings/TimezoneChangeDialog";
-import { Tips } from "@calcom/features/tips";
 import AdminPasswordBanner from "@calcom/features/users/components/AdminPasswordBanner";
 import CustomBranding from "@calcom/lib/CustomBranding";
 import classNames from "@calcom/lib/classNames";
@@ -22,7 +23,7 @@ import { useLocale } from "@calcom/lib/hooks/useLocale";
 import useTheme from "@calcom/lib/hooks/useTheme";
 import { trpc } from "@calcom/trpc/react";
 import useMeQuery from "@calcom/trpc/react/hooks/useMeQuery";
-import { SVGComponent } from "@calcom/types/SVGComponent";
+import type { SVGComponent } from "@calcom/types/SVGComponent";
 import {
   Button,
   Credits,
@@ -51,17 +52,13 @@ import {
   FiLogOut,
   FiCalendar,
   FiClock,
-  FiUsers,
   FiGrid,
   FiMoreHorizontal,
   FiFileText,
-  FiZap,
   FiSettings,
   FiArrowRight,
   FiArrowLeft,
 } from "@calcom/ui/components/icon";
-
-import { TeamInviteBadge } from "./TeamInviteBadge";
 
 /* TODO: Migate this */
 
@@ -463,13 +460,13 @@ const navigation: NavigationItemType[] = [
     href: "/availability",
     icon: FiClock,
   },
-  {
-    name: "teams",
-    href: "/teams",
-    icon: FiUsers,
-    onlyDesktop: true,
-    badge: <TeamInviteBadge />,
-  },
+  // {
+  //   name: "teams",
+  //   href: "/teams",
+  //   icon: FiUsers,
+  //   onlyDesktop: true,
+  //   badge: <TeamInviteBadge />,
+  // },
   {
     name: "apps",
     href: "/apps",
@@ -518,10 +515,15 @@ const navigation: NavigationItemType[] = [
       return router.asPath.startsWith("/apps/routing-forms/");
     },
   },
+  // {
+  //   name: "workflows",
+  //   href: "/workflows",
+  //   icon: FiZap,
+  // },
   {
-    name: "workflows",
-    href: "/workflows",
-    icon: FiZap,
+    name: "add_calendar",
+    href: "/apps/categories/calendar",
+    icon: FiCalendar,
   },
   {
     name: "settings",
@@ -756,7 +758,7 @@ function SideBar() {
         </div>
 
         <div>
-          <Tips />
+          {/* <Tips /> */}
           <div data-testid="user-dropdown-trigger">
             <span className="hidden lg:inline">
               <UserDropdown />

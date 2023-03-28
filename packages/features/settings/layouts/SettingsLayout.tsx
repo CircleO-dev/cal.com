@@ -3,7 +3,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/r
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { ComponentProps, useEffect, useState } from "react";
+import type { ComponentProps } from "react";
+import React, { useEffect, useState } from "react";
 
 import Shell from "@calcom/features/shell/Shell";
 import { classNames } from "@calcom/lib";
@@ -11,28 +12,19 @@ import { HOSTED_CAL_FEATURES, WEBAPP_URL } from "@calcom/lib/constants";
 import { getPlaceholderAvatar } from "@calcom/lib/defaultAvatarImage";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
-import {
-  Badge,
-  Button,
-  ErrorBoundary,
-  VerticalTabItemProps,
-  VerticalTabItem,
-  Skeleton,
-  useMeta,
-} from "@calcom/ui";
+import type { VerticalTabItemProps } from "@calcom/ui";
+import { Badge, Button, ErrorBoundary, VerticalTabItem, Skeleton, useMeta } from "@calcom/ui";
 import {
   FiUser,
   FiKey,
   FiCreditCard,
   FiTerminal,
-  FiUsers,
   FiLock,
   FiArrowLeft,
   FiChevronDown,
   FiChevronRight,
   FiPlus,
   FiMenu,
-  FiExternalLink,
 } from "@calcom/ui/components/icon";
 
 const tabs: VerticalTabItemProps[] = [
@@ -44,7 +36,7 @@ const tabs: VerticalTabItemProps[] = [
       { name: "profile", href: "/settings/my-account/profile" },
       { name: "general", href: "/settings/my-account/general" },
       { name: "calendars", href: "/settings/my-account/calendars" },
-      { name: "conferencing", href: "/settings/my-account/conferencing" },
+      // { name: "conferencing", href: "/settings/my-account/conferencing" },
       { name: "appearance", href: "/settings/my-account/appearance" },
       // TODO
       // { name: "referrals", href: "/settings/my-account/referrals" },
@@ -78,12 +70,12 @@ const tabs: VerticalTabItemProps[] = [
       // { name: "embeds", href: "/v2/settings/developer/embeds" },
     ],
   },
-  {
-    name: "teams",
-    href: "/settings/teams",
-    icon: FiUsers,
-    children: [],
-  },
+  // {
+  //   name: "teams",
+  //   href: "/settings/teams",
+  //   icon: FiUsers,
+  //   children: [],
+  // },
   {
     name: "admin",
     href: "/settings/admin",
@@ -98,12 +90,12 @@ const tabs: VerticalTabItemProps[] = [
   },
 ];
 
-tabs.find((tab) => {
-  // Add "SAML SSO" to the tab
-  if (tab.name === "security" && !HOSTED_CAL_FEATURES) {
-    tab.children?.push({ name: "saml_config", href: "/settings/security/sso" });
-  }
-});
+// tabs.find((tab) => {
+//   // Add "SAML SSO" to the tab
+//   if (tab.name === "security" && !HOSTED_CAL_FEATURES) {
+//     tab.children?.push({ name: "saml_config", href: "/settings/security/sso" });
+//   }
+// });
 
 // The following keys are assigned to admin only
 const adminRequiredKeys = ["admin"];

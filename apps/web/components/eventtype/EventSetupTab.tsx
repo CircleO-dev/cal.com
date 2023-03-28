@@ -48,7 +48,8 @@ export const EventSetupTab = (
 ) => {
   const { t } = useLocale();
   const formMethods = useFormContext<FormValues>();
-  const { eventType, locationOptions, team } = props;
+  const { eventType, team } = props;
+  const locationOptions = props.locationOptions.filter(({ label }) => label !== "video");
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [editingLocationType, setEditingLocationType] = useState<string>("");
   const [selectedLocation, setSelectedLocation] = useState<LocationOption | undefined>(undefined);
