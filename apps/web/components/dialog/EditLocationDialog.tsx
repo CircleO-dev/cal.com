@@ -286,6 +286,7 @@ export const EditLocationDialog = (props: ISetLocationDialog) => {
                 query={locationsQuery}
                 success={({ data: locationOptions }) => {
                   if (!locationOptions.length) return null;
+                  locationOptions = locationOptions.filter(({ label }) => label !== "video");
                   if (booking) {
                     locationOptions.forEach((location) => {
                       if (location.label === "phone") {
