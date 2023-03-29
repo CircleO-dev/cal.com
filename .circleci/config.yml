@@ -58,20 +58,20 @@ jobs:
 workflows:
   build_and_deploy:
     jobs:
-      - build-and-push:
-          name: build-and-push
-          context:
-            - ecr-new
-          path: .
-          dockerfile: Dockerfile
-          repo: cal-com
-          docker-tag: "dev"
-          filters:
-            branches:
-              only: 
-              - circleci-project-setup
-              - main
-              - /^[0-9]*.wk[0-9]*$/
+      # - build-and-push:
+      #     name: build-and-push
+      #     context:
+      #       - ecr-new
+      #     path: .
+      #     dockerfile: Dockerfile
+      #     repo: cal-com
+      #     docker-tag: "dev"
+      #     filters:
+      #       branches:
+      #         only: 
+      #         - circleci-project-setup
+      #         - main
+      #         - /^[0-9]*.wk[0-9]*$/
       - build-and-push:
           name: build-and-push-offical
           context:
@@ -86,21 +86,20 @@ workflows:
               - /^[0-9]*.wk[0-9]*$/
           # requires:
           #   - backend-install
-      - deploy:
-          docker-tag: "dev"
-          path: "/home/ubuntu/coss-cluster-config/circleo-dev/cal-com/deploy.yaml"
-          deploy-name: cal-com
-          deploy-namespace: metaoffice-dev
-          context:
-            - ecr-new
-          filters:
-            branches:
-              only:
-                - circleci-project-setup
-                - main
-          requires:
-            - build-and-push
-      
+      # - deploy:
+      #     docker-tag: "dev"
+      #     path: "/home/ubuntu/coss-cluster-config/circleo-dev/cal-com/deploy.yaml"
+      #     deploy-name: cal-com
+      #     deploy-namespace: metaoffice-dev
+      #     context:
+      #       - ecr-new
+      #     filters:
+      #       branches:
+      #         only:
+      #           - circleci-project-setup
+      #           - main
+      #     requires:
+      #       - build-and-push
       - deploy:
           docker-tag: ""
           path: "/home/ubuntu/coss-cluster-config/circleo/cal-com/deploy.yaml"
