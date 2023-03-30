@@ -1,5 +1,6 @@
-import { createEvent, DateArray } from "ics";
-import { TFunction } from "next-i18next";
+import type { DateArray } from "ics";
+import { createEvent } from "ics";
+import type { TFunction } from "next-i18next";
 import { RRule } from "rrule";
 
 import dayjs from "@calcom/dayjs";
@@ -36,6 +37,7 @@ export default class AttendeeScheduledEmail extends BaseEmail {
       recurrenceRule = new RRule(this.calEvent.recurringEvent).toString().replace("RRULE:", "");
     }
     const icsEvent = createEvent({
+      method: "REQUEST",
       start: dayjs(this.calEvent.startTime)
         .utc()
         .toArray()
