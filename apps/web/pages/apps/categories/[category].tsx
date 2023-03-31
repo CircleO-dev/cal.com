@@ -75,6 +75,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   const appStore = await getAppRegistry();
 
   const apps = appStore.filter((app) => dbAppsSlugs.includes(app.slug));
+
   return {
     props: {
       apps,
