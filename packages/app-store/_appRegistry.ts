@@ -5,7 +5,7 @@ import type { CredentialFrontendPayload as Credential } from "@calcom/types/Cred
 
 export async function getAppWithMetadata(app: { dirName: string }) {
   const appMetadata: App | null = appStoreMetadata[app.dirName as keyof typeof appStoreMetadata] as App;
-  // if (!appMetadata) return null;
+  if (!appMetadata) return null;
   // Let's not leak api keys to the front end
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { key, ...metadata } = appMetadata;
@@ -22,6 +22,7 @@ export async function getAppRegistry() {
     where: { enabled: true },
     select: { dirName: true, slug: true, categories: true, enabled: true },
   });
+  console.log("dbApps", dbApps);
   const apps = [] as App[];
   for await (const dbapp of dbApps) {
     const app = await getAppWithMetadata(dbapp);
@@ -42,6 +43,7 @@ export async function getAppRegistry() {
         true /* All apps from DB are considered installed by default. @TODO: Add and filter our by `enabled` property */,
     });
   }
+  console.log("apps", apps);
   return apps;
 }
 
