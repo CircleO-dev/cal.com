@@ -22,7 +22,7 @@ export async function getAppRegistry() {
     where: { enabled: true },
     select: { dirName: true, slug: true, categories: true, enabled: true },
   });
-  console.log("dbApps", dbApps);
+  console.log("dbApps", dbApps.length);
   const apps = [] as App[];
   for await (const dbapp of dbApps) {
     const app = await getAppWithMetadata(dbapp);
@@ -43,7 +43,6 @@ export async function getAppRegistry() {
         true /* All apps from DB are considered installed by default. @TODO: Add and filter our by `enabled` property */,
     });
   }
-  console.log("apps", apps);
   return apps;
 }
 
