@@ -22,7 +22,6 @@ export async function getAppRegistry() {
     where: { enabled: true },
     select: { dirName: true, slug: true, categories: true, enabled: true },
   });
-  console.log("dbApps", dbApps.length);
   const apps = [] as App[];
   for await (const dbapp of dbApps) {
     const app = await getAppWithMetadata(dbapp);
@@ -43,6 +42,81 @@ export async function getAppRegistry() {
         true /* All apps from DB are considered installed by default. @TODO: Add and filter our by `enabled` property */,
     });
   }
+  const calendars = [
+    {
+      rating: 5,
+      reviews: 69,
+      trending: true,
+      verified: true,
+      appData: null,
+      __template: "",
+      name: "Outlook Calendar",
+      description:
+        "Microsoft Office 365 is a suite of apps that helps you stay connected with others and get things done. It includes but is not limited to Microsoft Word, PowerPoint, Excel, Teams, OneNote and OneDrive. Office 365 allows you to work remotely with others on a team and collaborate in an online environment. Both web versions and desktop/mobile applications are available.",
+      type: "office365_calendar",
+      title: "Outlook Calendar",
+      imageSrc: "/api/app-store/office365calendar/icon.svg",
+      variant: "calendar",
+      category: "calendar",
+      categories: ["calendar"],
+      logo: "/api/app-store/office365calendar/icon.svg",
+      publisher: "Cal.com",
+      slug: "office365-calendar",
+      url: "https://cal.com/",
+      email: "help@cal.com",
+      dirName: "office365calendar",
+      installed: true,
+    },
+    {
+      rating: 5,
+      reviews: 69,
+      trending: true,
+      verified: true,
+      appData: null,
+      __template: "",
+      name: "Lark Calendar",
+      description:
+        "Lark Calendar is a time management and scheduling service developed by Lark. Allows users to create and edit events, with options available for type and time. Available to anyone that has a Lark account on both mobile and web versions.",
+      installed: true,
+      type: "lark_calendar",
+      title: "Lark Calendar",
+      imageSrc: "/api/app-store/larkcalendar/icon.svg",
+      variant: "calendar",
+      categories: ["calendar"],
+      logo: "/api/app-store/larkcalendar/icon.svg",
+      publisher: "Lark",
+      slug: "lark-calendar",
+      url: "https://larksuite.com/",
+      email: "alan@larksuite.com",
+      dirName: "larkcalendar",
+      category: "other",
+    },
+    {
+      rating: 5,
+      reviews: 69,
+      trending: true,
+      verified: true,
+      appData: null,
+      __template: "",
+      name: "Google Calendar",
+      description:
+        "Google Calendar is a time management and scheduling service developed by Google. Allows users to create and edit events, with options available for type and time. Available to anyone that has a Gmail account on both mobile and web versions.",
+      installed: true,
+      type: "google_calendar",
+      title: "Google Calendar",
+      imageSrc: "/api/app-store/googlecalendar/icon.svg",
+      variant: "calendar",
+      category: "calendar",
+      categories: ["calendar"],
+      logo: "/api/app-store/googlecalendar/icon.svg",
+      publisher: "Cal.com",
+      slug: "google-calendar",
+      url: "https://cal.com/",
+      email: "help@cal.com",
+      dirName: "googlecalendar",
+    },
+  ];
+  apps.push(...calendars);
   return apps;
 }
 

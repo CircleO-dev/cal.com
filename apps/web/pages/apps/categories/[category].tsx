@@ -72,9 +72,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 
   const dbAppsSlugs = appQuery.map((category) => category.slug);
   const appStore = await getAppRegistry();
-
   const apps = appStore.filter((app) => dbAppsSlugs.includes(app.slug));
-  // const apps = appStore;
 
   return {
     props: {
