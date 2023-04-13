@@ -94,7 +94,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   if (session?.user?.id) {
     appStore = await getAppRegistryWithCredentials(session.user.id);
   } else {
-    appStore = (await getAppRegistry()).apps;
+    appStore = await getAppRegistry();
   }
 
   const categoryQuery = appStore.map(({ categories }) => ({
