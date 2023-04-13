@@ -27,6 +27,8 @@ RUN yarn global add turbo && \
     yarn install
 
 RUN yarn turbo run build --filter=@calcom/web
+RUN cd packages/prisma && \
+    yarn seed-app-store
 
 FROM node:16 as runner
 
