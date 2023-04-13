@@ -3,7 +3,7 @@ FROM node:16 as builder
 WORKDIR /calcom
 ARG NEXT_PUBLIC_LICENSE_CONSENT=true
 ARG CALCOM_TELEMETRY_DISABLED
-ARG DATABASE_URL="postgresql://postgres:AeEGDB0b7Z5GK0E2tblt@dev-circleo-pg.celp3nik7oaq.ap-northeast-1.rds.amazonaws.com:5432/calcom?schema=public"
+ARG DATABASE_URL="postgresql://postgres:AeEGDB0b7Z5GK0E2tblt@dev-circleo-pg.celp3nik7oaq.ap-northeast-1.rds.amazonaws.com:5432/calcom"
 ARG NEXT_PUBLIC_WEBAPP_URL='https://cal.circleo.me'
 ARG NEXTAUTH_SECRET=wY9rmS46ilwVzqs81hwwOd0bs49IG+LdleoXRGuj3U8=
 ARG CALENDSO_ENCRYPTION_KEY=AP5Ud//I1SfmkHcLEURrmxRRXX/m1vl5
