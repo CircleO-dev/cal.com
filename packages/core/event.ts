@@ -1,4 +1,4 @@
-import { TFunction } from "next-i18next";
+import type { TFunction } from "next-i18next";
 
 import { guessEventLocationType } from "@calcom/app-store/locations";
 
@@ -12,12 +12,12 @@ export type EventNameObjectType = {
 };
 
 export function getEventName(eventNameObj: EventNameObjectType, forAttendeeView = false) {
-  if (!eventNameObj.eventName)
-    return eventNameObj.t("event_between_users", {
-      eventName: eventNameObj.eventType,
-      host: eventNameObj.host,
-      attendeeName: eventNameObj.attendeeName,
-    });
+  if (!eventNameObj.eventName) return eventNameObj.attendeeName + "'s CircleO Meeting";
+  // return eventNameObj.t("event_between_users", {
+  //   eventName: eventNameObj.eventType,
+  //   host: eventNameObj.host,
+  //   attendeeName: eventNameObj.attendeeName,
+  // });
 
   let eventName = eventNameObj.eventName;
   let locationString = eventNameObj.location || "";
