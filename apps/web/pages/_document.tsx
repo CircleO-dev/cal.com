@@ -39,6 +39,7 @@ class MyDocument extends Document<Props> {
           <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000" />
           <meta name="msapplication-TileColor" content="#ff0000" />
           <meta name="theme-color" content="#ffffff" />
+          <meta name="google-site-verification" content="O2vr-MeJD-ddpOrOob0Ol4hceWEb_9L9gOclpgtVaqw" />
           <link
             rel="preload"
             href="/fonts/Inter-roman.var.woff2"
