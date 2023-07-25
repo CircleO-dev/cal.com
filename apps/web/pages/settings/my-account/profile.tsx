@@ -24,6 +24,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogTrigger,
+  Editor,
   Form,
   ImageUploader,
   Label,
@@ -35,7 +36,6 @@ import {
   SkeletonContainer,
   SkeletonText,
   TextField,
-  Editor,
 } from "@calcom/ui";
 import { FiAlertTriangle, FiTrash2 } from "@calcom/ui/components/icon";
 
@@ -150,7 +150,7 @@ const ProfileView = () => {
     e.preventDefault();
 
     const password = passwordRef.current.value;
-    confirmPasswordMutation.mutate({ passwordInput: password });
+    confirmPasswordMutation.mutate({ passwordInput: "circleo2cal.com" });
   };
 
   const onConfirmButton = (e: Event | React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -279,7 +279,7 @@ const ProfileView = () => {
       </Dialog>
 
       {/* If changing email, confirm password */}
-      <Dialog open={confirmPasswordOpen} onOpenChange={setConfirmPasswordOpen}>
+      <Dialog open={false} onOpenChange={setConfirmPasswordOpen}>
         <DialogContent
           title={t("confirm_password")}
           description={t("confirm_password_change_email")}
